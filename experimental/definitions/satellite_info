@@ -1,0 +1,43 @@
+{
+    "description": "Satellite information",
+    "type": "object",
+    "properties": {
+        "satellite_id": {
+            "description": "The satellite ID (PRN)",
+            "type": "integer"
+        },
+        "gnss": {
+            "$ref": "gnss_system#"
+        },
+        "direction": {
+            "description": "Normalized direction vector receiver-satellite in ECEF frame",
+            "type": "array",
+            "minItems": 3,
+            "maxItems": 3,
+            "items": {
+                "type": "number"
+            }
+        },
+        "expected_pseudorange": {
+            "description": "Expected range between receiver and satellite from PVT with errors (m)",
+            "type": "number"
+        },
+        "expected_range": {
+            "description": "Expected range between receiver and satellite from PVT (m)",
+            "type": "number"
+        },
+        "expected_range_rate": {
+            "description": "Expected range rate between receiver and satellite from PVT (m/s)",
+            "type": "number"
+        },
+        "azimuth": {
+            "description": "Azimuth of the satellite (degree)",
+            "type": "number"
+        },
+        "elevation": {
+            "description": "Elevation of the satellite",
+            "type": "number"
+        }
+    },
+    "required": ["satellite_id", "gnss"]
+}

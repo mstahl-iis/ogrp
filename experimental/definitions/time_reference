@@ -1,0 +1,5 @@
+{
+    "title": "Time reference of timestamp",
+    "description": "See http://www.navipedia.net/index.php/Time_References_in_GNSS",
+    "enum": ["UTC", "GPST", "GST", "GLONASST", "BDT"]
+}

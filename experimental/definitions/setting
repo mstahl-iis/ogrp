@@ -1,0 +1,27 @@
+{
+    "description": "Receiver setting",
+    "type": "object",
+    "properties": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "description": "Name of setting",
+                "type": "string"
+            },
+            "value": {
+                "description": "Value of data as string",
+                "type": "string"
+            },
+            "type": {
+                "description": "String with typename or array with enumvalues as string",
+                "type": "string"
+            },
+            "remark": {
+                "description": "It is a description but description is a reserved word when using schema",
+                "type": "string"
+            }
+        },
+        "required": ["name", "value", "type"],
+        "additionalProperties": false
+    }
+}

@@ -1,0 +1,80 @@
+{
+    "title": "Glonass ephemeris",
+    "type": "object",
+    "properties": {
+        "satellite_id": {
+            "description": "The satellite ID (PRN)",
+            "type": "integer",
+            "minimum": 1
+        },
+        "freqnum": {
+            "description": "Frequency channel number",
+            "type": "integer",
+            "minimum": -7,
+            "maximum": 24
+        },
+        "reference_time": {
+            "description": "Reference time of ephemeris (s)",
+            "type": "integer",
+            "minimum": 0
+        },
+        "reference_day": {
+            "description": "Day of reference time of ephemeris (day in 4 year block)",
+            "type": "integer",
+            "minimum": 0
+        },
+        "healthy": {
+            "description": "True means satellite is healthy, taken from signal",
+            "type": "boolean"
+        },
+        "healthy1": {
+            "description": "True means satellite is healthy, taken from almanac",
+            "type": "boolean"
+        },
+        "healthy2": {
+            "description": "True means satellite is healthy, own diagnostic",
+            "type": "boolean"
+        },
+        "age": {
+            "description": "Ephemeris, age of data (days)",
+            "type": "number"
+        },
+        "coords": {
+            "description": "Ephemeris, coordinates (km)",
+            "type": "array",
+            "numItems": 3,
+            "items": {
+                "type": "number"
+            }
+        },
+        "velocities": {
+            "description": "Ephemeris, velocities (km/s)",
+            "type": "array",
+            "numItems": 3,
+            "items": {
+                "type": "number"
+            }
+        },
+        "accelarations": {
+            "description": "Ephemeris, accelarations (km/s*s)",
+            "type": "array",
+            "numItems": 3,
+            "items": {
+                "type": "number"
+            }
+        },
+        "tau_sys": {
+            "description": "Clock, time correction to glonass time scale (s)",
+            "type": "number"
+        },
+        "tau": {
+            "description": "Clock, time correction to sat-clock (s)",
+            "type": "number"
+        },
+        "gamma": {
+            "description": "Clock, sat-clock offset rate (s/s)",
+            "type": "number"
+        }
+    },
+    "required": ["satellite_id", "reference_time", "reference_day", "coords", "velocities", "accelarations"]
+}

@@ -1,0 +1,71 @@
+{
+    "description": "Measurement from a tracking channel",
+    "type": "object",
+    "properties": {
+        "carrier_phase": {
+            "type": "number",
+            "description": "(cycles)"
+        },
+        "carrier_range": {
+            "type": "number",
+            "description": "(meter)"
+        },
+        "code_phase": {
+            "type": "number",
+            "description": "(chips)"
+        },
+        "satellite_id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The satellite ID (PRN)"
+        },
+        "channel_state": {
+            "enum": ["IDLE", "SEARCHING", "PULL_IN", "LOCKED", "SYNCED"]
+        },
+        "channel_number": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "frequency_number": {
+            "type": "integer",
+            "minimum": -7,
+            "description": "Only for GLONASS frequency slot number"
+        },
+        "gnss": {
+            "$ref": "gnss_system#"
+        },
+        "signal_type": {
+            "$ref": "signal_type#"
+        },
+        "doppler": {
+            "type": "number",
+            "description": "(Hz)"
+        },
+        "locktime": {
+            "type": "number",
+            "description": "(seconds)"
+        },
+        "frequency_lock": {
+            "type": "number",
+            "description": "frequency lock indicator"
+        },
+        "phase_lock": {
+            "type": "number",
+            "description": "phase lock indicator"
+        },
+        "snr": {
+            "type": "number",
+            "description": "Signal to noise ratio"
+        },
+        "pseudo_range": {
+            "type": "number",
+            "description": "(meter)"
+        },
+        "corrected_pseudo_range": {
+            "type": "number",
+            "description": "Pseudorange after applying clock and atmospheric correction (in meter)"
+        }
+    },
+    "required": ["carrier_phase", "pseudo_range", "satellite_id", "gnss"],
+    "additionalProperties": false
+}

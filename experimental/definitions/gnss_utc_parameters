@@ -1,0 +1,39 @@
+{
+    "title": "GNSS time to UTC conversion parameters",
+    "type": "object",
+    "properties": {
+        "gnss": {
+            "description": "Using the parameters below time points of this system can be converted to UTC and vice versa.",
+            "$ref": "gnss_system#"
+        },
+        "a_0": {
+            "description": "Polynom constant value (s)",
+            "type": "number"
+        },
+        "a_1": {
+            "description": "Polynom linear value (s/s)",
+            "type": "number"
+        },
+        "delta_ls": {
+            "description": "Leap second count before leap second adjustment (s)",
+            "type": "integer"
+        },
+        "reference_time": {
+            "description": "UTC data reference time",
+            "$ref": "gnss_time#"
+        },
+        "week_lsf": {
+            "type": "integer",
+            "description": "Week number of leap second adjustment (week)"
+        },
+        "day_number": {
+            "type": "integer",
+            "description": "Day number at the end of which a leap second adjustment becomes effective (day)"
+        },
+        "delta_lsf": {
+            "type": "integer",
+            "description": "Leap second count after leap second adjustment (s)"
+        }
+    },
+    "required": ["gnss", "a_0", "a_1", "delta_ls", "reference_time", "week_lsf", "day_number", "delta_lsf"]
+}

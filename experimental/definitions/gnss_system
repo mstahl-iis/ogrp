@@ -1,0 +1,4 @@
+{
+    "description": "GNSS system identifier",
+    "enum": ["GPS", "GALILEO", "GLONASS", "SBAS"]
+}

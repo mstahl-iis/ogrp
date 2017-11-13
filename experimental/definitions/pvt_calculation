@@ -1,0 +1,79 @@
+{
+    "description": "PVT",
+    "type": "object",
+    "properties": {
+        "number_of_satellites": {
+            "description": "Number of satellites used in the PVT calculation",
+            "type": "number"
+        },
+        "coordinate_system": {
+            "description": "In case of WGS84 the coordinates are x:lat, y:lon in radian, z is elliptical",
+            "enum": ["ECEF", "WGS84"]
+        },
+        "precision": {
+            "description": "Calculation precision",
+            "enum": ["2D", "3D", "RTK_FIX", "RTK_FLOAT", "DGPS", "SBAS", "NO_FIX"]
+        },
+        "position": {
+            "description": "The calculated position",
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "Depending on coordinate_systems"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "Depending on coordinate_systems"
+                },
+                "z": {
+                    "type": "number",
+                    "description": "Depending on coordinate_systems"
+                }
+            }
+        },
+        "velocity": {
+            "description": "The calculated velocity",
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "ECEF"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "ECEF"
+                },
+                "z": {
+                    "type": "number",
+                    "description": "ECEF"
+                }
+            }
+        },
+        "clock_bias": {
+            "description": "The calculated clock error (s)",
+            "type": "number"
+        },
+        "clock_drift": {
+            "description": "The variation of the clock error in the last PVT interval (s/s)",
+            "type": "number"
+        },
+        "hdop": {
+            "description": "The horizontal dilution of precision",
+            "type": "number"
+        },
+        "pdop": {
+            "description": "The positional dilution of precision",
+            "type": "number"
+        },
+        "tdop": {
+            "description": "The time dilution of precision",
+            "type": "number"
+        },
+        "gdop": {
+            "description": "The geometric dilution of precision",
+            "type": "number"
+        }
+    },
+    "required": ["coordinate_system", "precision", "position"]
+}

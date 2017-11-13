@@ -1,0 +1,102 @@
+{
+    "description": "I&D values of a EPL hardware channel",
+    "type": "object",
+    "properties": {
+        "hw_channel_id": {
+            "type": "integer",
+            "description": "Unique ID of the hardware channel"
+        },
+        "epoch": {
+            "type": "number",
+            "description": "Epochs since hardware channel start (epochs)"
+        },
+        "tow": {
+            "type": "number",
+            "description": "Transmission time of the correlation values in seconds related to the beginning of the current week"
+        },
+        "carrier_doppler": {
+            "type": "number",
+            "description": "Last carrier doppler (Hz)"
+        },
+        "code_doppler": {
+            "type": "number",
+            "description": "Last code doppler (chips/s)"
+        },
+        "very_early": {
+            "type": "object",
+            "description": "Correlation value at very early correlation point",
+            "properties": {
+                "i": {
+                    "type": "number",
+                    "description": "Real part of the correlation"
+                },
+                "q": {
+                    "type": "number",
+                    "description": "Imaginary part of the correlation"
+                }
+            },
+            "required": ["i", "q"]
+        },
+        "early": {
+            "type": "object",
+            "description": "Correlation value at early correlation point",
+            "properties": {
+                "i": {
+                    "type": "number",
+                    "description": "Real part of the correlation"
+                },
+                "q": {
+                    "type": "number",
+                    "description": "Imaginary part of the correlation"
+                }
+            },
+            "required": ["i", "q"]
+        },
+        "prompt": {
+            "type": "object",
+            "description": "Correlation value at prompt correlation point",
+            "properties": {
+                "i": {
+                    "type": "number",
+                    "description": "Real part of the correlation"
+                },
+                "q": {
+                    "type": "number",
+                    "description": "Imaginary part of the correlation"
+                }
+            },
+            "required": ["i", "q"]
+        },
+        "late": {
+            "type": "object",
+            "description": "Correlation value at late correlation point",
+            "properties": {
+                "i": {
+                    "type": "number",
+                    "description": "Real part of the correlation"
+                },
+                "q": {
+                    "type": "number",
+                    "description": "Imaginary part of the correlation"
+                }
+            },
+            "required": ["i", "q"]
+        },
+        "very_late": {
+            "type": "object",
+            "description": "Correlation value at very late correlation point",
+            "properties": {
+                "i": {
+                    "type": "number",
+                    "description": "Real part of the correlation"
+                },
+                "q": {
+                    "type": "number",
+                    "description": "Imaginary part of the correlation"
+                }
+            },
+            "required": ["i", "q"]
+        }
+    },
+    "required": ["hw_channel_id", "epoch", "early", "prompt", "late"]
+}

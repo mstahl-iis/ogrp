@@ -1,0 +1,130 @@
+{
+    "description": "Measurement from an Inertial Measurement Unit",
+    "type": "object",
+    "properties": {
+        "acceleration": {
+            "description": "The acceleration vector as reported from the IMU",
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "(m/s^2)"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "(m/s^2)"
+                },
+                "z": {
+                    "type": "number",
+                    "description": "(m/s^2)"
+                }
+            }
+        },
+        "angular_rate": {
+            "description": "The angular rate as reported from the IMU",
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "(rad/s)"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "(rad/s)"
+                },
+                "z": {
+                    "type": "number",
+                    "description": "(rad/s)"
+                }
+            }
+        },
+        "delta_theta": {
+            "description": "Integral of angular rate over measurement interval",
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "(rad)"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "(rad)"
+                },
+                "z": {
+                    "type": "number",
+                    "description": "(rad)"
+                }
+            }
+        },
+        "delta_velocity": {
+            "description": "Integral of acceleration over measurement interval",
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "(m/s)"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "(m/s)"
+                },
+                "z": {
+                    "type": "number",
+                    "description": "(m/s)"
+                }
+            }
+        },
+        "magnetic_field": {
+            "description": "The magnetic field as reported from the IMU",
+            "type": "object",
+            "properties": {
+                "x": {
+                    "type": "number",
+                    "description": "(Gs)"
+                },
+                "y": {
+                    "type": "number",
+                    "description": "(Gs)"
+                },
+                "z": {
+                    "type": "number",
+                    "description": "(Gs)"
+                }
+            }
+        },
+        "gps_correlation_timestamp": {
+            "type": "object",
+            "properties": {
+                "gps_tow": {
+                    "description": "GPS time of week (s)",
+                    "type": "number"
+                },
+                "gps_week_number": {
+                    "description": "GPS week number",
+                    "type": "number"
+                },
+                "pps_beacon_good": {
+                    "description": "If set, GNSS PPS is present",
+                    "type": "boolean"
+                },
+                "gps_time_refresh": {
+                    "description": "PPS pulse counter",
+                    "type": "number"
+                },
+                "gps_time_initialized": {
+                    "description": "Is set once upon the first valid GPS time record",
+                    "type": "boolean"
+                }
+            },
+            "required": ["gnss_tow", "gnss_week_number", "pps_beacon_good", "gps_time_refresh", "gps_time_initialized"]
+        },
+        "pressure": {
+            "description": "Pressure (hPa)",
+            "type": "number"
+        },
+        "measurement_interval": {
+            "description": "(s)",
+            "type": "number"
+        }
+    }
+}

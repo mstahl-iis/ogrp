@@ -1,0 +1,39 @@
+{
+    "description": "Information about configuration of the hardware channel for external tracking loops",
+    "type": "object",
+    "properties": {
+        "hw_channel_id": {
+            "description": "Unique ID of the hardware channel",
+            "type": "integer"
+        },
+        "carrier_frequency": {
+            "description": "Carrier frequency of acquired signal (Hz)",
+            "type": "number"
+        },
+        "carrier_doppler": {
+            "description": "Carrier doppler from acquisition (Hz)",
+            "type": "number"
+        },
+        "code_doppler": {
+            "description": "Code doppler from acquisition (chips/s)",
+            "type": "number"
+        },
+        "early_late_spacing": {
+            "description": "Early late spacing of the hardware channel (chips)",
+            "type": "number"
+        },
+        "integration_time": {
+            "description": "Integration time of the correlators (s)",
+            "type": "number"
+        },
+        "acf_slope": {
+            "description": "Slope of the autocorrelation function (chip/chip)",
+            "type": "number"
+        },
+        "dll_hard_limiter": {
+            "description": "Recommended hard limitation for DLL discriminator output (chips)",
+            "type": "number"
+        }
+    },
+    "required": ["hw_channel_id", "carrier_doppler", "code_doppler", "early_late_spacing", "integration_time", "acf_slope"]
+}

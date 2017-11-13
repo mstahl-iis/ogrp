@@ -1,0 +1,113 @@
+{
+    "title": "GPS or Galileo ephemeris (Kepler parameters)",
+    "type": "object",
+    "properties": {
+        "gnss": { "$ref": "gnss_system#" },
+        "satellite_id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "The satellite ID (PRN)"
+        },
+        "clock_issue": {
+            "type": "integer",
+            "description": "Subframe 1, issue of data, clock"
+        },
+        "satellite_health": {
+            "type": "integer",
+            "description": "Subframe 1, satellite health"
+        },
+        "clock_reference": {
+            "type": "integer",
+            "description": "Subframe 1, clock Data reference time (s)"
+        },
+        "week_number": {
+            "type": "integer",
+            "description": "Subframe 1, GPS week number"
+        },
+        "group_delay": {
+            "type": "number",
+            "description": "Subframe 1, estimated group delay differential (s)"
+        },
+        "af_2": {
+            "type": "number",
+            "description": "Subframe 1, polynomal coefficient (s/s*s)"
+        },
+        "af_1": {
+            "type": "number",
+            "description": "Subframe 1, polynomal coefficient (s/s)"
+        },
+        "af_0": {
+            "type": "number",
+            "description": "Subframe 1, polynomal coefficient (s)"
+        },
+        "ephemeris_reference": {
+            "type": "integer",
+            "description": "Subframe 2 and 3, ephemeris reference time (s)"
+        },
+        "ephemeris_issue": {
+            "type": "integer",
+            "description": "Subframe 2 and 3, issue of data, ephemeris"
+        },
+        "root_a": {
+            "type": "number",
+            "description": "Keplerian, root_a (m^1/2)"
+        },
+        "ecc": {
+            "type": "number",
+            "description": "Keplerian, ecc"
+        },
+        "m_0": {
+            "type": "number",
+            "description": "Keplerian, m_0 (radian)"
+        },
+        "omega_0": {
+            "type": "number",
+            "description": "Keplerian, omega_0 (radian)"
+        },
+        "inc_0": {
+            "type": "number",
+            "description": "Keplerian, inc_0 (radian)"
+        },
+        "arg_per": {
+            "type": "number",
+            "description": "Keplerian, arg_per (radian)"
+        },
+        "deln": {
+            "type": "number",
+            "description": "Corrections to orbital E, deln (radian/s)"
+        },
+        "omega_dot": {
+            "type": "number",
+            "description": "Corrections to orbital E, omega_dot (radian/s)"
+        },
+        "inc_dot": {
+            "type": "number",
+            "description": "Corrections to orbital E, inc_dot (radian/s)"
+        },
+        "crc": {
+            "type": "number",
+            "description": "Corrections to orbital E, crc (m)"
+        },
+        "crs": {
+            "type": "number",
+            "description": "Corrections to orbital E, crs (m)"
+        },
+        "cuc": {
+            "type": "number",
+            "description": "Corrections to orbital E, cuc (radian)"
+        },
+        "cus": {
+            "type": "number",
+            "description": "Corrections to orbital E, cus (radian)"
+        },
+        "cic": {
+            "type": "number",
+            "description": "Corrections to orbital E, cic (radian)"
+        },
+        "cis": {
+            "type": "number",
+            "description": "Corrections to orbital E, cis (radian)"
+        }
+    },
+    "required": ["satellite_id", "ephemeris_reference", "root_a", "ecc", "m_0", "omega_0", "inc_0", "arg_per"]
+}

@@ -1,0 +1,20 @@
+{
+    "description": "GPS-Galileo system time conversion parameters",
+    "type": "object",
+    "properties": {
+        "a_0": {
+            "type": "number",
+            "description": "Polynom constant value (s)"
+        },
+        "a_1": {
+            "type": "number",
+            "description": "Polynom linear value (s/s)"
+        },
+        "reference_time": {
+            "description": "Reference time for GGTO data",
+            "$ref": "gnss_time#"
+        }
+    },
+    "required": ["a_0", "a_1", "reference_time"],
+    "additionalProperties": false
+}

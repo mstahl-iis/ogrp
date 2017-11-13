@@ -1,0 +1,15 @@
+{
+    "description": "GNSS time point",
+    "type": "object",
+    "properties": {
+        "tow": {
+            "description": "Time of week (s)",
+            "type": "number"
+        },
+        "week": {
+            "description": "Week number (start epoch is 0h UTC on Sunday, 22 August 1999; does not overflow)",
+            "type": "integer"
+        }
+    },
+    "required": ["tow", "week"]
+}

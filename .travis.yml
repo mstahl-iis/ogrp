@@ -5,9 +5,11 @@ install:
   - composer require justinrainbow/json-schema
 
 script:
-  - vendor/bin/jsonlint draft-00/schema
-  - vendor/bin/jsonlint draft-00/measurement.ogrp
-  - vendor/bin/jsonlint draft-01/schema
-  - vendor/bin/jsonlint draft-01/measurement.ogrp
-  - vendor/bin/validate-json draft-00/measurement.ogrp draft-00/schema
-  - vendor/bin/validate-json draft-01/measurement.ogrp draft-01/schema
+  - for f in draft-*/*; do vendor/bin/jsonlint $f; done
+  - for f in draft-*/schema; do vendor/bin/validate-json $f; done
+  - for d in draft-*; do vendor/bin/validate-json $d/measurement.ogrp $d/schema; done
+  - vendor/bin/jsonlint experimental/schema; done
+  - for e in experimental/definitions/*; do vendor/bin/jsonlint $e; done
+  - vendor/bin/validate-json experimental/schema
+  - for e in example/*; do vendor/bin/jsonlint $e; done
+  - for e in example/*.ogrp; do vendor/bin/validate-json $e experimental/schema; done
