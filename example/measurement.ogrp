@@ -28,6 +28,5 @@
 			"satellite_id": 50,
 			"pseudo_range": 20340000
 		}
-	],
-	"id": "measurement"
+	]
 }

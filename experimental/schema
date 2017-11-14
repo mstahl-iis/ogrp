@@ -8,9 +8,6 @@
             "enum": ["OGRP_NEXT"],
             "description": "OGRP version"
         },
-        "id": {
-            "type": "string"
-        },
         "time_status": {
             "description": "Timestamp source",
             "enum": ["SYSTEM","EXTERNAL","FREE_RUNNING","FINESTEERING","GPS_SYNCED"]
@@ -67,5 +64,5 @@
         "control_values": { "$ref": "definitions/control_values#" },
         "imu_measurements": { "$ref": "definitions/imu_measurement#" }
     },
-    "required": ["id", "timestamp", "time_reference", "protocol"]
+    "required": ["timestamp", "time_reference", "protocol"]
 }
