@@ -1,0 +1,46 @@
+{
+    "title": "Ionosphere model",
+    "type": "object",
+    "oneOf": [
+        {
+            "title": "Klobuchar model",
+            "description": "See http://www.navipedia.net/index.php/Klobuchar_Ionospheric_Model",
+            "properties": {
+                "model": { "enum": ["Klobuchar"] },
+                "amplitude": {
+                    "description": "Coefficients of cubic equation, amplitude of vertical delay (s..s/semicircles^3)",
+                    "type": "array",
+                    "numItems": 4,
+                    "items": { "type": "number" }
+                },
+                "period": {
+                    "description": "Coefficients of cubic equation, modelperiod (s..s/semicircles^3)",
+                    "type": "array",
+                    "numItems": 4,
+                    "items": { "type": "number" }
+                }
+            },
+            "required": ["model", "amplitude", "period"]
+        },
+        {
+            "title": "Nequick model",
+            "description": "See http://www.navipedia.net/index.php/NeQuick_Ionospheric_Model",
+            "properties": {
+                "model": { "enum": ["Nequick"] },
+                "effective_ionisation_level": {
+                    "description": "Effective ionisation level 1st..3rd order of Nequick model (sfu..sfu/deg^2)",
+                    "type": "array",
+                    "numItems": 3,
+                    "items": { "type": "number" }
+                },
+                "disturbance": {
+                    "description": "Disturbance flags of the 5 regions",
+                    "type": "array",
+                    "numItems": 5,
+                    "items": { "type": "boolean" }
+                }
+            },
+            "required": ["model", "effective_ionisation_level"]
+        }
+    ]
+}

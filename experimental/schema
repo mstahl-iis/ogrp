@@ -42,8 +42,7 @@
         "glonass_ephemeris": { "$ref": "definitions/ephemeris_glonass#" },
         "ephemeris": { "$ref": "definitions/ephemeris_kepler#" },
         "almanac": { "$ref": "definitions/almanac#" },
-        "ionosphere_klobuchar": { "$ref": "definitions/ionosphere_klobuchar#" },
-        "ionosphere_nequick": { "$ref": "definitions/ionosphere_nequick#" },
+        "ionosphere_model": { "$ref": "definitions/ionosphere_model#" },
         "pvt_calculation": { "$ref": "definitions/pvt_calculation#" },
         "satellite_info": {
             "type": "array",
