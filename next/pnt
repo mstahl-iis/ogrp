@@ -290,27 +290,27 @@
       "properties": {
         "utc": {
           "description": "Universal Coordinated Time (uses leap seconds)",
-          "$ref": "#/$defs/DateTime"
+          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/DateTime"
         },
         "tai": {
           "description": "International Atomic Time (strictly monotonic)",
-          "$ref": "#/$defs/DateTime"
+          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/DateTime"
         },
         "gpst": {
           "description": "GPS Time (strictly monotonic)",
-          "$ref": "#/$defs/GnssTime"
+          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/GnssTime"
         },
         "gst": {
           "description": "Galileo System Time (strictly monotonic)",
-          "$ref": "#/$defs/GnssTime"
+          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/GnssTime"
         },
         "bdt": {
           "description": "BeiDou Time (strictly monotonic)",
-          "$ref": "#/$defs/GnssTime"
+          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/GnssTime"
         },
         "glonasst": {
           "description": "GLONASS Time (UTC-like)",
-          "$ref": "#/$defs/DateTime"
+          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/DateTime"
         }
       },
       "additionalProperties": {
