@@ -24,7 +24,7 @@
       "$ref": "#/$defs/Covariance"
     },
     "fix": {
-      "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/PositionFix"
+      "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/FixType"
     },
     "algorithm": {
       "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/Algorithm"
