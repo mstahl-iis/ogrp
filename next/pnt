@@ -9,120 +9,28 @@
       "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/GeodeticDatum"
     },
     "position": {
-      "description": "Position in various coordinate systems.",
-      "type": "object",
-      "properties": {
-        "cartesian_ecef": {
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/CartesianPosition"
-        },
-        "geodetic_ecef": {
-          "$ref": "#/$defs/GeodeticPosition"
-        }
-      },
-      "minProperties": 1
+      "$ref": "#/$defs/Position"
     },
     "velocity": {
-      "description": "Velocity in various coordinate systems.",
-      "type": "object",
-      "properties": {
-        "ground_vertical": {
-          "$ref": "#/$defs/GroundVerticalVelocity"
-        },
-        "cartesian_ecef": {
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/CartesianVelocity"
-        },
-        "enu": {
-          "$ref": "#/$defs/EastNorthUpVelocity"
-        },
-        "ned": {
-          "$ref": "#/$defs/NorthEastDownVelocity"
-        }
-      }
+      "$ref": "#/$defs/Velocity"
     },
     "orientation": {
-      "description": "Orientation in various representations.",
-      "type": "object",
-      "properties": {
-        "global": {
-          "$ref": "#/$defs/Quaternion"
-        },
-        "local": {
-          "$ref": "#/$defs/EulerAngles"
-        }
-      },
-      "minProperties": 1
+      "$ref": "#/$defs/Orientation"
     },
     "time": {
-      "description": "GNSS system time representations.",
-      "type": "object",
-      "properties": {
-        "utc": {
-          "description": "Universal Coordinated Time (uses leap seconds)",
-          "$ref": "#/$defs/DateTime"
-        },
-        "tai": {
-          "description": "International Atomic Time (strictly monotonic)",
-          "$ref": "#/$defs/DateTime"
-        },
-        "gpst": {
-          "description": "GPS Time (strictly monotonic)",
-          "$ref": "#/$defs/GnssTime"
-        },
-        "gst": {
-          "description": "Galileo System Time (strictly monotonic)",
-          "$ref": "#/$defs/GnssTime"
-        },
-        "bdt": {
-          "description": "BeiDou Time (strictly monotonic)",
-          "$ref": "#/$defs/GnssTime"
-        },
-        "glonasst": {
-          "description": "GLONASS Time (UTC-like)",
-          "$ref": "#/$defs/DateTime"
-        }
-      },
-      "additionalProperties": {
-        "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/GnssTime"
-      },
-      "minProperties": 1
+      "$ref": "#/$defs/Time"
     },
     "covariance": {
-      "description": "Covariance matrices for position, velocity, and time.",
-      "type": "object",
-      "properties": {
-        "global_position": {
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/PositionCovariance"
-        },
-        "global_velocity": {
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/VelocityCovariance"
-        },
-        "local_position": {
-          "$ref": "#/$defs/PositionCovarianceNED"
-        }
-      },
-      "minProperties": 1
+      "$ref": "#/$defs/Covariance"
     },
     "fix": {
       "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/PositionFix"
     },
     "algorithm": {
-      "description": "The algorithm used to compute position, velocity, and time.",
-      "type": "string",
-      "anyOf": [
-        {
-          "enum": [
-            "Least-Squares",
-            "Kalman-Filter",
-            "GNSS+INS",
-            "GNSS+OtherSensors",
-            "INS-only",
-            "User"
-          ]
-        },
-        {
-          "pattern": "^X-[A-Za-z0-9_-]+$"
-        }
-      ]
+      "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/Algorithm"
+    },
+    "signals": {
+      "$ref": "#/$defs/Signals"
     }
   },
   "required": [
@@ -141,27 +49,28 @@
       "properties": {
         "lat": {
           "title": "Latitude",
+          "description": "Latitude relative to equator in degrees. Positive values are northward.",
           "type": "number",
-          "description": "Degrees",
           "minimum": -90,
           "maximum": 90
         },
         "lon": {
           "title": "Longitude",
+          "description": "Longitude relative to prime meridian in degrees. Positive values are eastward.",
           "type": "number",
-          "description": "Degrees",
           "minimum": -180,
           "exclusiveMaximum": 180
         },
         "height": {
           "title": "Height above ellipsoid",
+          "description": "Height above ellipsoid in meters.",
           "type": "number",
-          "description": "Meters"
+          "default": 0
         },
         "height_msl": {
           "title": "Height above mean sea level",
-          "type": "number",
-          "description": "Meters"
+          "description": "Height above mean sea level (geoid) in meters.",
+          "type": "number"
         }
       },
       "required": [
@@ -169,6 +78,20 @@
         "lon",
         "height"
       ]
+    },
+    "Position": {
+      "title": "Position",
+      "description": "Position in various coordinate systems.",
+      "type": "object",
+      "properties": {
+        "cartesian_ecef": {
+          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/CartesianPosition"
+        },
+        "geodetic_ecef": {
+          "$ref": "#/$defs/GeodeticPosition"
+        }
+      },
+      "minProperties": 1
     },
     "EastNorthUpVelocity": {
       "title": "East-North-Up Velocity",
@@ -230,6 +153,20 @@
       "title": "Ground and Vertical Velocity",
       "type": "object",
       "properties": {
+        "course_over_ground": {
+          "title": "Course over Ground",
+          "description": "Heading relative to true north in degrees.",
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 360
+        },
+        "heading_magnetic": {
+          "title": "Heading Magnetic",
+          "description": "Heading relative to magnetic north in degrees.",
+          "type": "number",
+          "minimum": 0,
+          "exclusiveMaximum": 360
+        },
         "speed_over_ground": {
           "title": "Speed over Ground",
           "description": "Speed over ground in meters per second.",
@@ -243,8 +180,28 @@
         }
       },
       "required": [
+        "course_over_ground",
         "speed_over_ground"
       ]
+    },
+    "Velocity": {
+      "title": "Velocity",
+      "description": "Velocity in various coordinate systems.",
+      "type": "object",
+      "properties": {
+        "ground_vertical": {
+          "$ref": "#/$defs/GroundVerticalVelocity"
+        },
+        "cartesian_ecef": {
+          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/CartesianVelocity"
+        },
+        "enu": {
+          "$ref": "#/$defs/EastNorthUpVelocity"
+        },
+        "ned": {
+          "$ref": "#/$defs/NorthEastDownVelocity"
+        }
+      }
     },
     "Quaternion": {
       "title": "Unit Quaternion",
@@ -312,6 +269,54 @@
         "pitch",
         "yaw"
       ]
+    },
+    "Orientation": {
+      "description": "Orientation in various representations.",
+      "type": "object",
+      "properties": {
+        "global": {
+          "$ref": "#/$defs/Quaternion"
+        },
+        "local": {
+          "$ref": "#/$defs/EulerAngles"
+        }
+      },
+      "minProperties": 1
+    },
+    "Time": {
+      "title": "Time",
+      "description": "GNSS system time representations.",
+      "type": "object",
+      "properties": {
+        "utc": {
+          "description": "Universal Coordinated Time (uses leap seconds)",
+          "$ref": "#/$defs/DateTime"
+        },
+        "tai": {
+          "description": "International Atomic Time (strictly monotonic)",
+          "$ref": "#/$defs/DateTime"
+        },
+        "gpst": {
+          "description": "GPS Time (strictly monotonic)",
+          "$ref": "#/$defs/GnssTime"
+        },
+        "gst": {
+          "description": "Galileo System Time (strictly monotonic)",
+          "$ref": "#/$defs/GnssTime"
+        },
+        "bdt": {
+          "description": "BeiDou Time (strictly monotonic)",
+          "$ref": "#/$defs/GnssTime"
+        },
+        "glonasst": {
+          "description": "GLONASS Time (UTC-like)",
+          "$ref": "#/$defs/DateTime"
+        }
+      },
+      "additionalProperties": {
+        "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/GnssTime"
+      },
+      "minProperties": 1
     },
     "PositionCovarianceNED": {
       "title": "Covariance Matrix NED",
@@ -394,6 +399,184 @@
         "ed",
         "dt"
       ]
+    },
+    "Covariance": {
+      "description": "Covariance matrices for position, velocity, and time.",
+      "type": "object",
+      "properties": {
+        "global_position": {
+          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/PositionCovariance"
+        },
+        "global_velocity": {
+          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/VelocityCovariance"
+        },
+        "local_position": {
+          "$ref": "#/$defs/PositionCovarianceNED"
+        }
+      },
+      "minProperties": 1
+    },
+    "Signals": {
+      "title": "GNSS Signals",
+      "description": "GNSS signals used for position, velocity, and time computation.",
+      "type": "object",
+      "properties": {
+        "gps": {
+          "description": "GPS signals",
+          "type": "object",
+          "properties": {
+            "l1": {
+              "description": "L1 signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "l2": {
+              "description": "L2 signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "l5": {
+              "description": "L5 signals",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "minProperties": 1
+        },
+        "glonass": {
+          "description": "GLONASS signals",
+          "type": "object",
+          "properties": {
+            "l1": {
+              "description": "L1 signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "l2": {
+              "description": "L2 signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "l3": {
+              "description": "L3 signals",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "minProperties": 1
+        },
+        "galileo": {
+          "description": "Galileo signals",
+          "type": "object",
+          "properties": {
+            "e1": {
+              "description": "E1 signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "e5a": {
+              "description": "E5a signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "e5b": {
+              "description": "E5b signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "e6": {
+              "description": "E6 signals",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "minProperties": 1
+        },
+        "beidou": {
+          "description": "BeiDou signals",
+          "type": "object",
+          "properties": {
+            "b1": {
+              "description": "B1 signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "b2": {
+              "description": "B2 signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "b3": {
+              "description": "B3 signals",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "minProperties": 1
+        },
+        "qzss": {
+          "description": "QZSS signals",
+          "type": "object",
+          "properties": {
+            "l1": {
+              "description": "L1 signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "l2": {
+              "description": "L2 signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "l5": {
+              "description": "L5 signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "l6": {
+              "description": "L6 signals",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "minProperties": 1
+        },
+        "sbas": {
+          "description": "SBAS signals",
+          "type": "object",
+          "properties": {
+            "l1": {
+              "description": "L1 signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "l5": {
+              "description": "L5 signals",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "minProperties": 1
+        },
+        "navic": {
+          "description": "NavIC signals",
+          "type": "object",
+          "properties": {
+            "l5": {
+              "description": "L5 signals",
+              "type": "integer",
+              "minimum": 1
+            },
+            "s": {
+              "description": "S-band signals",
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "minProperties": 1
+        }
+      },
+      "minProperties": 1
     }
   }
 }

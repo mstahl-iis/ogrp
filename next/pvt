@@ -9,63 +9,28 @@
     "datum": {
       "$ref": "#/$defs/GeodeticDatum"
     },
-    "pos": {
+    "position": {
       "$ref": "#/$defs/CartesianPosition"
     },
-    "vel": {
+    "velocity": {
       "$ref": "#/$defs/CartesianVelocity"
     },
     "time": {
-      "description": "GNSS system time representations.",
-      "type": "object",
-      "properties": {
-        "tai": {
-          "description": "International Atomic Time (strictly monotonic)",
-          "$ref": "#/$defs/DateTime"
-        },
-        "gpst": {
-          "description": "GPS Time (strictly monotonic)",
-          "$ref": "#/$defs/GnssTime"
-        },
-        "gst": {
-          "description": "Galileo System Time (strictly monotonic)",
-          "$ref": "#/$defs/GnssTime"
-        },
-        "bdt": {
-          "description": "BeiDou Time (strictly monotonic)",
-          "$ref": "#/$defs/GnssTime"
-        },
-        "glonasst": {
-          "description": "GLONASS Time (UTC-like)",
-          "$ref": "#/$defs/DateTime"
-        }
-      },
-      "minProperties": 1
+      "$ref": "#/$defs/Time"
     },
-    "cov": {
-      "title": "Covariance Matrices",
-      "description": "Covariance matrices for position + time and velocity + time drift.",
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "pos": {
-          "$ref": "#/$defs/PositionCovariance"
-        },
-        "vel": {
-          "$ref": "#/$defs/VelocityCovariance"
-        }
-      },
-      "required": [
-        "position"
-      ]
+    "covariance": {
+      "$ref": "#/$defs/Covariance"
     },
     "fix": {
-      "$ref": "#/$defs/PositionFix"
+      "$ref": "#/$defs/FixType"
+    },
+    "algorithm": {
+      "$ref": "#/$defs/Algorithm"
     }
   },
   "required": [
     "datum",
-    "pos",
+    "position",
     "time",
     "fix"
   ],
@@ -248,6 +213,34 @@
         "tow_ms"
       ]
     },
+    "Time": {
+      "title": "Time",
+      "description": "GNSS system time representations.",
+      "type": "object",
+      "properties": {
+        "tai": {
+          "description": "International Atomic Time (strictly monotonic)",
+          "$ref": "#/$defs/DateTime"
+        },
+        "gpst": {
+          "description": "GPS Time (strictly monotonic)",
+          "$ref": "#/$defs/GnssTime"
+        },
+        "gst": {
+          "description": "Galileo System Time (strictly monotonic)",
+          "$ref": "#/$defs/GnssTime"
+        },
+        "bdt": {
+          "description": "BeiDou Time (strictly monotonic)",
+          "$ref": "#/$defs/GnssTime"
+        },
+        "glonasst": {
+          "description": "GLONASS Time (UTC-like)",
+          "$ref": "#/$defs/DateTime"
+        }
+      },
+      "minProperties": 1
+    },
     "PositionCovariance": {
       "title": "Covariance Matrix",
       "description": "Upper-triangular elements of a symmetric 4×4 covariance matrix for variables {t, x, y, z}. Units must match the associated state components.",
@@ -412,8 +405,25 @@
         "vzdt"
       ]
     },
-    "PositionFix": {
-      "title": "Position Fix",
+    "Covariance": {
+      "title": "Covariance Matrices",
+      "description": "Covariance matrices for position + time and velocity + time drift.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "$ref": "#/$defs/PositionCovariance"
+        },
+        "velocity": {
+          "$ref": "#/$defs/VelocityCovariance"
+        }
+      },
+      "required": [
+        "pos"
+      ]
+    },
+    "FixType": {
+      "title": "PVT Fix Type",
       "description": "Type of position fix. Custom fix types must use the 'X-' prefix.",
       "type": "string",
       "anyOf": {
@@ -421,12 +431,33 @@
           "none",
           "2D",
           "3D",
+          "SBAS",
           "DGNSS",
           "RTK",
           "PPP"
         ],
         "pattern": "^X-[A-Z0-9_-]+$"
       }
+    },
+    "Algorithm": {
+      "title": "PVT Algorithm",
+      "description": "The algorithm used to compute position, velocity, and time. Custom algorithms must use the 'X-' prefix.",
+      "type": "string",
+      "anyOf": [
+        {
+          "enum": [
+            "Least-Squares",
+            "Kalman-Filter",
+            "GNSS+INS",
+            "GNSS+OtherSensors",
+            "INS-only",
+            "User"
+          ]
+        },
+        {
+          "pattern": "^X-[A-Za-z0-9_-]+$"
+        }
+      ]
     }
   }
 }
