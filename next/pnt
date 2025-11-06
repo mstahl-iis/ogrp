@@ -47,14 +47,14 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "lat": {
+        "latitude": {
           "title": "Latitude",
           "description": "Latitude relative to equator in degrees. Positive values are northward.",
           "type": "number",
           "minimum": -90,
           "maximum": 90
         },
-        "lon": {
+        "longitude": {
           "title": "Longitude",
           "description": "Longitude relative to prime meridian in degrees. Positive values are eastward.",
           "type": "number",
