@@ -1,0 +1,266 @@
+name: Publish next schemas and generate C++
+
+on:
+  push:
+    branches: [ "next/schema" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  prepare-schemas:
+    name: Convert YAML schema to JSON
+    env:
+      BASE_URL: https://fraunhofer-iis.github.io/ogrp/next/
+      REPO_DIR: repo
+      PUBLISH_DIR: public
+    runs-on: ubuntu-latest
+    outputs:
+      has_schema: ${{ steps.convert.outputs.has_schema }}
+      has_files: ${{ steps.have_files.outputs.has_files }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          path: ${{ env.REPO_DIR }}
+
+      - name: Create publish dir and create index
+        shell: bash
+        run: |
+          rm -rf "$PUBLISH_DIR"
+          mkdir -p "$PUBLISH_DIR"
+          cp "$REPO_DIR/README.md" "$PUBLISH_DIR/index.md"
+
+      - name: Convert YAML schema to JSON
+        id: convert
+        uses: mikefarah/yq@master
+        with:
+          cmd: |
+            #
+            # Convert *.schema.yaml under repo into public as JSON
+            echo "has_schema=false" > "$GITHUB_OUTPUT"
+            while IFS= read -r -d '' f; do
+              name="${f%.schema.yaml}" # drop ".schema.yaml"
+              out="$PUBLISH_DIR/${name#"$REPO_DIR"/}"
+              echo "Converting $f to $out"
+              mkdir -p "$(dirname "$out")"
+              yq -o=json '.' "$f" > "$out"
+              yq eval '(.. | select(has("$ref"))."$ref") |= sub("\.schema\.yaml", "")' -o=json -i $out
+              yq eval '(.. | select(has("$id"))."$id") |= sub("^(.*)\.schema\.yaml$", "'${BASE_URL}'$1")' -o=json -i $out
+              echo "has_schema=true" > "$GITHUB_OUTPUT"
+            done < <(find "$REPO_DIR" -type f -name '*.schema.yaml' -print0)
+
+      - name: Check for files to upload
+        id: have_files
+        shell: bash
+        run: |
+          if find "$PUBLISH_DIR" -type f -print -quit | grep -q .; then
+            echo "has_files=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_files=false" >> "$GITHUB_OUTPUT"
+            echo "No generated schema JSON files found; stopping after prepare-schemas."
+          fi
+
+      - name: Upload JSON schema artifact
+        if: steps.have_files.outputs.has_files == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: jsonschema
+          path: ${{ env.PUBLISH_DIR }}
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy-gh-pages:
+    name: Deploy to gh-pages
+    needs: prepare-schemas
+    if: needs.prepare-schemas.outputs.has_files == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download JSON schema artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jsonschema
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./
+          publish_branch: gh-pages
+          destination_dir: next
+          enable_jekyll: true
+
+  quicktype-cpp:
+    name: Generate C++ via quicktype and publish
+    needs: prepare-schemas
+    if: needs.prepare-schemas.outputs.has_schema == 'true'
+    runs-on: ubuntu-latest
+    env:
+      REPO_DIR: repo
+      SCHEMA_DIR: schema
+      TARGET_BRANCH: next/c++
+    steps:
+      - name: Checkout repo (for pushing branch)
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          path: ${{ env.REPO_DIR }}
+
+      - name: Download JSON schema artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jsonschema
+          path: ${{ env.SCHEMA_DIR }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install quicktype
+        run: npm install -g quicktype
+
+      - name: Generate C++ headers
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "$REPO_DIR"/*.[ch]pp
+
+          # Build -S flags for every entry under schema/ except 'message' and markdown files
+          INCLUDES=()
+          for p in "$SCHEMA_DIR"/*; do
+            base="$(basename "$p")"
+            [[ "$base" = "message" ]] && continue
+            [[ "$base" == *.md ]] && continue
+            INCLUDES+=("-S" "$p")
+          done
+
+          set -x
+          quicktype --telemetry disable \
+            --src-lang schema \
+            --lang c++ \
+            --source-style multi-source \
+            --include-location global-include \
+            --code-format with-struct \
+            --namespace ogrp \
+            --no-boost \
+            --hide-null-optional \
+            ${INCLUDES[@]} \
+            -o "$REPO_DIR"/Message.cpp \
+            "$SCHEMA_DIR"/message
+
+      - name: Push generated code to c++ branch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pushd "$REPO_DIR">/dev/null
+          if git status --porcelain | grep -q .; then
+            git config user.name "${GITHUB_ACTOR}"
+            git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+            git add .
+            git commit -m "Generate C++ via quicktype for ${{ github.sha }}"
+            git push origin "${TARGET_BRANCH}"
+          else
+            echo "No changes to commit."
+          fi
+          popd >/dev/null
+
+      - name: Publish C++ headers
+        uses: actions/upload-artifact@v4
+        with:
+          name: cppheaders
+          path: ${{ env.REPO_DIR }}/*.[ch]pp
+          if-no-files-found: error
+          retention-days: 7
+
+  quicktype-python:
+    name: Generate Python via quicktype and publish
+    needs: prepare-schemas
+    if: needs.prepare-schemas.outputs.has_schema == 'true'
+    runs-on: ubuntu-latest
+    env:
+      REPO_DIR: repo
+      SCHEMA_DIR: schema
+      TARGET_BRANCH: next/python
+    steps:
+      - name: Checkout repo (for pushing branch)
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ env.TARGET_BRANCH }}
+          path: ${{ env.REPO_DIR }}
+
+      - name: Download JSON schema artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: jsonschema
+          path: ${{ env.SCHEMA_DIR }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install quicktype
+        run: npm install -g quicktype
+
+      - name: Generate Python file
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "$REPO_DIR"/*.py
+
+          # Build -S flags for every entry under schema/ except 'message' and markdown files
+          INCLUDES=()
+          for p in "$SCHEMA_DIR"/*; do
+            base="$(basename "$p")"
+            [[ "$base" = "message" ]] && continue
+            [[ "$base" == *.md ]] && continue
+            INCLUDES+=("-S" "$p")
+          done
+
+          set -x
+          quicktype --telemetry disable \
+            --src-lang schema \
+            --lang python \
+            --python-version 3.7 \
+            ${INCLUDES[@]} \
+            -o "$REPO_DIR"/ogrp.py \
+            "$SCHEMA_DIR"/message
+
+      - name: Push generated code to python branch
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pushd "$REPO_DIR">/dev/null
+          if git status --porcelain | grep -q .; then
+            git config user.name "${GITHUB_ACTOR}"
+            git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+            git add .
+            git commit -m "Generate Python via quicktype for ${{ github.sha }}"
+            git push origin "${TARGET_BRANCH}"
+          else
+            echo "No changes to commit."
+          fi
+          popd >/dev/null
+
+      - name: Publish Python file
+        uses: actions/upload-artifact@v4
+        with:
+          name: python
+          path: ${{ env.REPO_DIR }}/*.py
+          if-no-files-found: error
+          retention-days: 7
