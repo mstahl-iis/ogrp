@@ -4,32 +4,63 @@
   "title": "Position, Velocity, Time (PVT)",
   "description": "Position and velocity refer to earth-centered, earth-fixed cartesian coordinate system defined by `datum`.",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
     "datum": {
       "$ref": "#/$defs/GeodeticDatum"
     },
     "pos": {
-      "$ref": "#/$defs/Cartesian Position"
+      "$ref": "#/$defs/CartesianPosition"
     },
     "vel": {
-      "$ref": "#/$defs/Cartesian Velocity"
+      "$ref": "#/$defs/CartesianVelocity"
     },
     "time": {
-      "$ref": "#/$defs/GnssSystemTime"
+      "description": "GNSS system time representations.",
+      "type": "object",
+      "properties": {
+        "tai": {
+          "description": "International Atomic Time (strictly monotonic)",
+          "$ref": "#/$defs/DateTime"
+        },
+        "gpst": {
+          "description": "GPS Time (strictly monotonic)",
+          "$ref": "#/$defs/GnssTime"
+        },
+        "gst": {
+          "description": "Galileo System Time (strictly monotonic)",
+          "$ref": "#/$defs/GnssTime"
+        },
+        "bdt": {
+          "description": "BeiDou Time (strictly monotonic)",
+          "$ref": "#/$defs/GnssTime"
+        },
+        "glonasst": {
+          "description": "GLONASS Time (UTC-like)",
+          "$ref": "#/$defs/DateTime"
+        }
+      },
+      "minProperties": 1
     },
     "cov": {
-      "$ref": "#/$defs/CovarianceMatrix"
+      "title": "Covariance Matrices",
+      "description": "Covariance matrices for position + time and velocity + time drift.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pos": {
+          "$ref": "#/$defs/PositionCovariance"
+        },
+        "vel": {
+          "$ref": "#/$defs/VelocityCovariance"
+        }
+      },
+      "required": [
+        "position"
+      ]
     },
     "fix": {
-      "description": "Type of position fix.",
-      "enum": [
-        "none",
-        "2D",
-        "3D",
-        "DGPS",
-        "RTK",
-        "PPP"
-      ]
+      "$ref": "#/$defs/PositionFix"
     }
   },
   "required": [
@@ -40,36 +71,48 @@
   ],
   "$defs": {
     "GeodeticDatum": {
+      "title": "Geodetic Datum",
       "description": "A Geodetic Datum consists of a referencen frame and optional definition of epoch and ellipsoid.",
       "type": "object",
       "properties": {
         "frame": {
-          "type": "string",
-          "description": "Geodetic reference frame/datum (e.g., ITRF2020, WGS84(G2139), ETRS89, NAD83(2011))."
+          "title": "Geodetic Reference Frame",
+          "description": "Geodetic reference frame/datum (e.g., ITRF2020, WGS84(G2139), ETRS89, NAD83(2011)).",
+          "type": "string"
         },
         "epoch": {
-          "type": "number",
-          "description": "Reference epoch of coordinates as decimal year (e.g., 2025.0). Required if the frame is time-dependent."
+          "title": "Reference Epoch",
+          "description": "Reference epoch of coordinates as decimal year (e.g., 2025.0). Required if the frame is time-dependent.",
+          "type": "number"
         },
         "ellipsoid": {
-          "type": "object",
+          "title": "Reference Ellipsoid",
           "description": "Reference ellipsoid. If omitted, it is implied by reference frame (e.g., WGS 84).",
+          "type": "object",
           "additionalProperties": false,
           "properties": {
             "name": {
-              "type": "string",
-              "description": "e.g., WGS84, GRS80"
+              "description": "e.g., WGS84, GRS80",
+              "type": "string"
             },
             "a": {
+              "title": "Semi-major axis",
+              "description": "Semi-major axis a, meters.",
               "type": "number",
-              "description": "Semi-major axis a, meters."
+              "exclusiveMinimum": 0
             },
             "f": {
-              "type": "number",
+              "title": "Flattening",
               "description": "Flattening f (unitless).",
+              "type": "number",
               "exclusiveMinimum": 0,
               "exclusiveMaximum": 1
-            }
+            },
+            "required": [
+              "name",
+              "a",
+              "f"
+            ]
           }
         }
       },
@@ -77,7 +120,8 @@
         "frame"
       ]
     },
-    "Cartesian Position": {
+    "CartesianPosition": {
+      "title": "Cartesian Position",
       "description": "Cartesian coordinates in meters.",
       "type": "object",
       "additionalProperties": false,
@@ -104,7 +148,8 @@
         "z"
       ]
     },
-    "Cartesian Velocity": {
+    "CartesianVelocity": {
+      "title": "Cartesian Velocity",
       "description": "Cartesian velocity in meters per second.",
       "type": "object",
       "additionalProperties": false,
@@ -132,114 +177,141 @@
       ]
     },
     "GnssSystem": {
-      "enum": [
-        "GPS",
-        "Galileo",
-        "Glonass",
-        "BeiDou",
-        "QZSS",
-        "IRNSS",
-        "SBAS"
-      ]
+      "title": "GNSS System",
+      "description": "GNSS system identifier. Custom or multi-GNSS systems must use the 'X-' prefix.",
+      "type": "string",
+      "anyOf": {
+        "enum": [
+          "GPS",
+          "Galileo",
+          "Glonass",
+          "BeiDou",
+          "QZSS",
+          "IRNSS",
+          "SBAS"
+        ],
+        "pattern": "^X-[A-Za-z0-9_-]+$"
+      }
     },
-    "GnssSystemTime": {
+    "DateTime": {
+      "title": "DateTime",
+      "description": "RFC 3339 Date and Time representation. Not limited to UTC.",
+      "type": "string",
+      "format": "date-time"
+    },
+    "GnssTime": {
+      "title": "GNSS System Time",
+      "description": "Native GNSS system time in week and time-of-week in milliseconds. No leap seconds for GPS/Galileo/BeiDou; GLONASS is UTC-like.",
       "type": "object",
-      "description": "Native GNSS system time in week and time of week in milliseconds. No leap seconds for GPS/Galileo/BeiDou; GLONASS is UTC-like.",
       "additionalProperties": false,
       "properties": {
-        "system": {
-          "$ref": "#/$defs/GnssSystem"
+        "rollovers": {
+          "title": "Number of Week Rollovers",
+          "description": "Number of week rollovers since GNSS system epoch (e.g., GPS epoch: January 6, 1980).",
+          "type": "integer",
+          "minimum": 0
         },
         "week": {
-          "title": "GNSS week number",
+          "title": "Week Number",
+          "description": "Week number since GNSS system epoch. Maximum depends on GNSS system.",
           "type": "integer",
           "minimum": 0
         },
         "tow_ms": {
-          "title": "Milliseconds of week",
+          "title": "Time of week",
+          "description": "Time of week in milliseconds.",
+          "$comment": "Milliseconds are used to avoid floating point rounding issues for typical PVT rates.",
           "type": "integer",
           "minimum": 0,
           "maximum": 604799000
         },
         "offset_ns": {
+          "title": "Clock Offset",
+          "description": "Clock offset in nanoseconds. Positive means GNSS time is ahead of receiver clock.",
           "type": "number",
           "minimum": -500000,
-          "maximum": 500000,
-          "description": "Clock offset in nanoseconds"
+          "maximum": 500000
         },
         "drift_ns_per_s": {
-          "type": "number",
-          "description": "Clock drift in ns/s"
+          "title": "Clock Drift",
+          "description": "Clock drift in ns/s. Positive means GNSS time is faster than receiver clock.",
+          "type": "number"
         },
-        "leapSeconds": {
+        "leap_seconds_utc": {
           "title": "UTC–GNSS leap seconds",
-          "type": "integer",
-          "description": "Number of leap seconds (GNSS-UTC) applicable at this epoch."
+          "description": "Number of leap seconds (GNSS-UTC) applicable at this epoch.",
+          "type": "integer"
         }
       },
       "required": [
-        "system",
         "week",
         "tow_ms"
       ]
     },
-    "CovarianceMatrix": {
-      "type": "object",
+    "PositionCovariance": {
+      "title": "Covariance Matrix",
       "description": "Upper-triangular elements of a symmetric 4×4 covariance matrix for variables {t, x, y, z}. Units must match the associated state components.",
+      "type": "object",
       "additionalProperties": false,
       "properties": {
         "tt": {
-          "title": "Variance (t)",
+          "description": "Variance (t)",
           "type": "number",
           "minimum": 0
         },
         "xx": {
-          "title": "Variance (x)",
+          "description": "Variance (x)",
           "type": "number",
           "minimum": 0
         },
         "yy": {
-          "title": "Variance (y)",
+          "description": "Variance (y)",
           "type": "number",
           "minimum": 0
         },
         "zz": {
-          "title": "Variance (z)",
+          "description": "Variance (z)",
           "type": "number",
           "minimum": 0
         },
         "xt": {
-          "title": "Covariance (x, t)",
+          "description": "Covariance (x",
+          "t)": null,
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "xy": {
-          "title": "Covariance (x, y)",
+          "description": "Covariance (x",
+          "y)": null,
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "xz": {
-          "title": "Covariance (x, z)",
+          "description": "Covariance (x",
+          "z)": null,
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "yt": {
-          "title": "Covariance (y, t)",
+          "description": "Covariance (y",
+          "t)": null,
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "yz": {
-          "title": "Covariance (y, z)",
+          "description": "Covariance (y",
+          "z)": null,
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "zt": {
-          "title": "Covariance (z, t)",
+          "description": "Covariance (z",
+          "t)": null,
           "type": "number",
           "minimum": -1,
           "maximum": 1
@@ -247,16 +319,114 @@
       },
       "required": [
         "tt",
-        "xt",
         "xx",
+        "yy",
+        "zz",
+        "xt",
         "xy",
         "xz",
         "yt",
-        "yy",
         "yz",
-        "zt",
-        "zz"
+        "zt"
       ]
+    },
+    "VelocityCovariance": {
+      "title": "Velocity Covariance Matrix",
+      "description": "Upper-triangular elements of a symmetric 4×4 covariance matrix for variables {dt, vx, vy, vz}. Units must match the associated state components.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dtdt": {
+          "description": "Variance (dt)",
+          "type": "number",
+          "minimum": 0
+        },
+        "vxvx": {
+          "description": "Variance (vx)",
+          "type": "number",
+          "minimum": 0
+        },
+        "vyvy": {
+          "description": "Variance (vy)",
+          "type": "number",
+          "minimum": 0
+        },
+        "vzvz": {
+          "description": "Variance (vz)",
+          "type": "number",
+          "minimum": 0
+        },
+        "vxdt": {
+          "description": "Covariance (vx",
+          "dt)": null,
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "vxvy": {
+          "description": "Covariance (vx",
+          "vy)": null,
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "vxvz": {
+          "description": "Covariance (vx",
+          "vz)": null,
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "vydt": {
+          "description": "Covariance (vy",
+          "dt)": null,
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "vyvz": {
+          "description": "Covariance (vy",
+          "vz)": null,
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "vzdt": {
+          "description": "Covariance (vz",
+          "dt)": null,
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "dtdt",
+        "vxvx",
+        "vyvy",
+        "vzvz",
+        "vxdt",
+        "vxvy",
+        "vxvz",
+        "vydt",
+        "vyvz",
+        "vzdt"
+      ]
+    },
+    "PositionFix": {
+      "title": "Position Fix",
+      "description": "Type of position fix. Custom fix types must use the 'X-' prefix.",
+      "type": "string",
+      "anyOf": {
+        "enum": [
+          "none",
+          "2D",
+          "3D",
+          "DGNSS",
+          "RTK",
+          "PPP"
+        ],
+        "pattern": "^X-[A-Z0-9_-]+$"
+      }
     }
   }
 }
