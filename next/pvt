@@ -42,29 +42,43 @@
       "properties": {
         "frame": {
           "title": "Geodetic Reference Frame",
-          "description": "Geodetic reference frame/datum (e.g., ITRF2020, WGS84(G2139), ETRS89, NAD83(2011)).",
-          "type": "string"
+          "description": "Geodetic reference frame/datum (e.g., ITRF2020, WGS84, GTRF, PZ90, CGCS2000).",
+          "type": "string",
+          "example": [
+            "ITRF2020",
+            "WGS84",
+            "GTRF",
+            "PZ90",
+            "CGCS2000"
+          ]
         },
         "epoch": {
           "title": "Reference Epoch",
           "description": "Reference epoch of coordinates as decimal year (e.g., 2025.0). Required if the frame is time-dependent.",
-          "type": "number"
+          "type": "number",
+          "minimum": 1900,
+          "maximum": 2100
         },
         "ellipsoid": {
           "title": "Reference Ellipsoid",
-          "description": "Reference ellipsoid. If omitted, it is implied by reference frame (e.g., WGS 84).",
+          "description": "Reference ellipsoid. If omitted, it is implied by reference frame (e.g., WGS84).",
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "name": {
               "description": "e.g., WGS84, GRS80",
-              "type": "string"
+              "type": "string",
+              "example": [
+                "WGS84",
+                "GRS80"
+              ]
             },
             "a": {
               "title": "Semi-major axis",
               "description": "Semi-major axis a, meters.",
               "type": "number",
-              "exclusiveMinimum": 0
+              "exclusiveMinimum": 0,
+              "x-unit": "meters"
             },
             "f": {
               "title": "Flattening",
@@ -72,18 +86,33 @@
               "type": "number",
               "exclusiveMinimum": 0,
               "exclusiveMaximum": 1
-            },
-            "required": [
-              "name",
-              "a",
-              "f"
-            ]
-          }
+            }
+          },
+          "required": [
+            "name",
+            "a",
+            "f"
+          ]
         }
       },
       "required": [
         "frame"
       ]
+    },
+    "Length": {
+      "title": "Length",
+      "description": "Length in meters.",
+      "$comment": "Range is limited to +/- 100 million km to guarantee sub-millimeter precision with IEEE double.",
+      "type": "number",
+      "minimum": -100000000000,
+      "maximum": 100000000000,
+      "x-unit": "m"
+    },
+    "Speed": {
+      "title": "Speed",
+      "description": "Speed in meters per second.",
+      "type": "number",
+      "x-unit": "m/s"
     },
     "CartesianPosition": {
       "title": "Cartesian Position",
@@ -92,19 +121,16 @@
       "additionalProperties": false,
       "properties": {
         "x": {
-          "title": "Position in X",
-          "type": "number",
-          "description": "meters"
+          "description": "X coordinate in meters.",
+          "$ref": "#/$defs/Length"
         },
         "y": {
-          "title": "Position in Y",
-          "type": "number",
-          "description": "meters"
+          "description": "Y coordinate in meters.",
+          "$ref": "#/$defs/Length"
         },
         "z": {
-          "title": "Position in Z",
-          "type": "number",
-          "description": "meters"
+          "description": "Z coordinate in meters.",
+          "$ref": "#/$defs/Length"
         }
       },
       "required": [
@@ -120,19 +146,16 @@
       "additionalProperties": false,
       "properties": {
         "vx": {
-          "title": "Velocity in X",
-          "type": "number",
-          "description": "m/s"
+          "description": "X velocity in meters per second.",
+          "$ref": "#/$defs/Speed"
         },
         "vy": {
-          "title": "Velocity in Y",
-          "type": "number",
-          "description": "m/s"
+          "description": "Y velocity in meters per second.",
+          "$ref": "#/$defs/Speed"
         },
         "vz": {
-          "title": "Velocity in Z",
-          "type": "number",
-          "description": "m/s"
+          "description": "Z velocity in meters per second.",
+          "$ref": "#/$defs/Speed"
         }
       },
       "required": [
@@ -145,7 +168,7 @@
       "title": "GNSS System",
       "description": "GNSS system identifier. Custom or multi-GNSS systems must use the 'X-' prefix.",
       "type": "string",
-      "anyOf": {
+      "oneOf": {
         "enum": [
           "GPS",
           "Galileo",
@@ -165,8 +188,8 @@
       "format": "date-time"
     },
     "GnssTime": {
-      "title": "GNSS System Time",
-      "description": "Native GNSS system time in week and time-of-week in milliseconds. No leap seconds for GPS/Galileo/BeiDou; GLONASS is UTC-like.",
+      "title": "GNSS Time",
+      "description": "Native GNSS time in week and time-of-week in milliseconds. No leap seconds for GPS/Galileo/BeiDou; GLONASS is UTC-like.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -180,7 +203,8 @@
           "title": "Week Number",
           "description": "Week number since GNSS system epoch. Maximum depends on GNSS system.",
           "type": "integer",
-          "minimum": 0
+          "minimum": 0,
+          "x-unit": "weeks"
         },
         "tow_ms": {
           "title": "Time of week",
@@ -188,14 +212,16 @@
           "$comment": "Milliseconds are used to avoid floating point rounding issues for typical PVT rates.",
           "type": "integer",
           "minimum": 0,
-          "maximum": 604799000
+          "maximum": 604799000,
+          "x-unit": "ms"
         },
         "offset_ns": {
           "title": "Clock Offset",
           "description": "Clock offset in nanoseconds. Positive means GNSS time is ahead of receiver clock.",
           "type": "number",
           "minimum": -500000,
-          "maximum": 500000
+          "maximum": 500000,
+          "x-unit": "ns"
         },
         "drift_ns_per_s": {
           "title": "Clock Drift",
@@ -205,7 +231,8 @@
         "leap_seconds_utc": {
           "title": "UTC–GNSS leap seconds",
           "description": "Number of leap seconds (GNSS-UTC) applicable at this epoch.",
-          "type": "integer"
+          "type": "integer",
+          "x-unit": "s"
         }
       },
       "required": [
@@ -268,43 +295,37 @@
           "minimum": 0
         },
         "xt": {
-          "description": "Covariance (x",
-          "t)": null,
+          "description": "Covariance (x, t)",
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "xy": {
-          "description": "Covariance (x",
-          "y)": null,
+          "description": "Covariance (x, y)",
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "xz": {
-          "description": "Covariance (x",
-          "z)": null,
+          "description": "Covariance (x, z)",
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "yt": {
-          "description": "Covariance (y",
-          "t)": null,
+          "description": "Covariance (y, t)",
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "yz": {
-          "description": "Covariance (y",
-          "z)": null,
+          "description": "Covariance (y, z)",
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "zt": {
-          "description": "Covariance (z",
-          "t)": null,
+          "description": "Covariance (z, t)",
           "type": "number",
           "minimum": -1,
           "maximum": 1
@@ -350,43 +371,37 @@
           "minimum": 0
         },
         "vxdt": {
-          "description": "Covariance (vx",
-          "dt)": null,
+          "description": "Covariance (vx, dt)",
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "vxvy": {
-          "description": "Covariance (vx",
-          "vy)": null,
+          "description": "Covariance (vx, vy)",
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "vxvz": {
-          "description": "Covariance (vx",
-          "vz)": null,
+          "description": "Covariance (vx, vz)",
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "vydt": {
-          "description": "Covariance (vy",
-          "dt)": null,
+          "description": "Covariance (vy, dt)",
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "vyvz": {
-          "description": "Covariance (vy",
-          "vz)": null,
+          "description": "Covariance (vy, vz)",
           "type": "number",
           "minimum": -1,
           "maximum": 1
         },
         "vzdt": {
-          "description": "Covariance (vz",
-          "dt)": null,
+          "description": "Covariance (vz, dt)",
           "type": "number",
           "minimum": -1,
           "maximum": 1
@@ -419,31 +434,38 @@
         }
       },
       "required": [
-        "pos"
+        "position"
       ]
     },
     "FixType": {
       "title": "PVT Fix Type",
       "description": "Type of position fix. Custom fix types must use the 'X-' prefix.",
       "type": "string",
-      "anyOf": {
-        "enum": [
-          "none",
-          "2D",
-          "3D",
-          "SBAS",
-          "DGNSS",
-          "RTK",
-          "PPP"
-        ],
-        "pattern": "^X-[A-Z0-9_-]+$"
-      }
+      "oneOf": [
+        {
+          "enum": [
+            "USER",
+            "LAST-KNOWN",
+            "DEAD-RECONING",
+            "2D",
+            "3D",
+            "SBAS",
+            "DGNSS",
+            "RTK-FIX",
+            "RTK-FLOAT",
+            "PPP"
+          ]
+        },
+        {
+          "pattern": "^X-[A-Z0-9_-]+$"
+        }
+      ]
     },
     "Algorithm": {
       "title": "PVT Algorithm",
       "description": "The algorithm used to compute position, velocity, and time. Custom algorithms must use the 'X-' prefix.",
       "type": "string",
-      "anyOf": [
+      "oneOf": [
         {
           "enum": [
             "Least-Squares",

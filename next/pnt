@@ -5,6 +5,12 @@
   "description": "Reliable position, navigation, and timing including sensors, algorithms, integrity/continuity/availability, and policies.",
   "type": "object",
   "properties": {
+    "fix": {
+      "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/FixType"
+    },
+    "algorithm": {
+      "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/Algorithm"
+    },
     "datum": {
       "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/GeodeticDatum"
     },
@@ -23,22 +29,19 @@
     "covariance": {
       "$ref": "#/$defs/Covariance"
     },
-    "fix": {
-      "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/FixType"
-    },
-    "algorithm": {
-      "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/Algorithm"
+    "dop": {
+      "$ref": "#/$defs/DilutionOfPrecision"
     },
     "signals": {
       "$ref": "#/$defs/Signals"
     }
   },
   "required": [
+    "fix",
     "datum",
     "position",
     "velocity",
-    "time",
-    "fix"
+    "time"
   ],
   "$defs": {
     "GeodeticPosition": {
@@ -52,25 +55,29 @@
           "description": "Latitude relative to equator in degrees. Positive values are northward.",
           "type": "number",
           "minimum": -90,
-          "maximum": 90
+          "maximum": 90,
+          "x-unit": "deg"
         },
         "longitude": {
           "title": "Longitude",
           "description": "Longitude relative to prime meridian in degrees. Positive values are eastward.",
           "type": "number",
           "minimum": -180,
-          "exclusiveMaximum": 180
+          "exclusiveMaximum": 180,
+          "x-unit": "deg"
         },
         "height": {
           "title": "Height above ellipsoid",
           "description": "Height above ellipsoid in meters.",
           "type": "number",
-          "default": 0
+          "default": 0,
+          "x-unit": "m"
         },
-        "height_msl": {
-          "title": "Height above mean sea level",
-          "description": "Height above mean sea level (geoid) in meters.",
-          "type": "number"
+        "altitude_msl": {
+          "title": "Altitude above mean sea level",
+          "description": "Altitude above mean sea level (geoid) in meters.",
+          "type": "number",
+          "x-unit": "m"
         }
       },
       "required": [
@@ -416,162 +423,110 @@
       },
       "minProperties": 1
     },
+    "DilutionOfPrecision": {
+      "title": "Dilution of Precision",
+      "description": "Unitless DOP metrics derived from satellite geometry; lower is better. Rough accuracy guide assumes open-sky code positioning with UERE ≈ 3–5 m, where position_sigma ≈ DOP × UERE. Carrier-phase (RTK/PPP) have much smaller UERE and therefore much better accuracy.",
+      "type": "object",
+      "properties": {
+        "gdop": {
+          "description": "Geometric DOP",
+          "type": "number",
+          "minimum": 0
+        },
+        "pdop": {
+          "description": "Position DOP",
+          "type": "number",
+          "minimum": 0
+        },
+        "hdop": {
+          "description": "Horizontal DOP",
+          "type": "number",
+          "minimum": 0
+        },
+        "vdop": {
+          "description": "Vertical DOP",
+          "type": "number",
+          "minimum": 0
+        },
+        "tdop": {
+          "description": "Time DOP",
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "gdop",
+        "pdop",
+        "hdop",
+        "vdop",
+        "tdop"
+      ]
+    },
     "Signals": {
       "title": "GNSS Signals",
       "description": "GNSS signals used for position, velocity, and time computation.",
       "type": "object",
       "properties": {
         "gps": {
-          "description": "GPS signals",
+          "title": "GPS signals",
+          "description": "Number of signals used per frequency band. E.g. { \"l1ca\": 3, \"l2c\": 2 }.",
           "type": "object",
-          "properties": {
-            "l1": {
-              "description": "L1 signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "l2": {
-              "description": "L2 signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "l5": {
-              "description": "L5 signals",
-              "type": "integer",
-              "minimum": 1
-            }
+          "additionalProperties": {
+            "type": "integer"
           },
           "minProperties": 1
         },
         "glonass": {
-          "description": "GLONASS signals",
+          "title": "GLONASS signals",
+          "description": "Number of signals used per frequency band. E.g. { \"l1\": 3, \"l2\": 2 }.",
           "type": "object",
-          "properties": {
-            "l1": {
-              "description": "L1 signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "l2": {
-              "description": "L2 signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "l3": {
-              "description": "L3 signals",
-              "type": "integer",
-              "minimum": 1
-            }
+          "additionalProperties": {
+            "type": "integer"
           },
           "minProperties": 1
         },
         "galileo": {
-          "description": "Galileo signals",
+          "title": "Galileo signals",
+          "description": "Number of signals used per frequency band. E.g. { \"e1b\": 3, \"e5a\": 2, \"e6a\": 5 }.",
           "type": "object",
-          "properties": {
-            "e1": {
-              "description": "E1 signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "e5a": {
-              "description": "E5a signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "e5b": {
-              "description": "E5b signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "e6": {
-              "description": "E6 signals",
-              "type": "integer",
-              "minimum": 1
-            }
+          "additionalProperties": {
+            "type": "integer"
           },
           "minProperties": 1
         },
         "beidou": {
-          "description": "BeiDou signals",
+          "title": "BeiDou signals",
+          "description": "Number of signals used per frequency band. E.g. { \"b1c\": 3, \"b2a\": 2, \"b3\": 5 }.",
           "type": "object",
-          "properties": {
-            "b1": {
-              "description": "B1 signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "b2": {
-              "description": "B2 signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "b3": {
-              "description": "B3 signals",
-              "type": "integer",
-              "minimum": 1
-            }
+          "additionalProperties": {
+            "type": "integer"
           },
           "minProperties": 1
         },
         "qzss": {
-          "description": "QZSS signals",
+          "title": "QZSS signals",
+          "description": "Number of signals used per frequency band. E.g. { \"l1ca\": 3, \"l2cm\": 2, \"l5i\": 5, \"l6lex\": 1 }.",
           "type": "object",
-          "properties": {
-            "l1": {
-              "description": "L1 signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "l2": {
-              "description": "L2 signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "l5": {
-              "description": "L5 signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "l6": {
-              "description": "L6 signals",
-              "type": "integer",
-              "minimum": 1
-            }
-          },
-          "minProperties": 1
-        },
-        "sbas": {
-          "description": "SBAS signals",
-          "type": "object",
-          "properties": {
-            "l1": {
-              "description": "L1 signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "l5": {
-              "description": "L5 signals",
-              "type": "integer",
-              "minimum": 1
-            }
+          "additionalProperties": {
+            "type": "integer"
           },
           "minProperties": 1
         },
         "navic": {
-          "description": "NavIC signals",
+          "title": "NavIC/IRNSS signals",
+          "description": "Number of signals used per frequency band. E.g. { \"l5\": 3, \"s\": 2 }.",
           "type": "object",
-          "properties": {
-            "l5": {
-              "description": "L5 signals",
-              "type": "integer",
-              "minimum": 1
-            },
-            "s": {
-              "description": "S-band signals",
-              "type": "integer",
-              "minimum": 1
-            }
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "minProperties": 1
+        },
+        "sbas": {
+          "title": "SBAS signals",
+          "description": "Number of signals used per frequency band. E.g. { \"l1egnos\": 3, \"l5waas\": 2 }.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
           },
           "minProperties": 1
         }
