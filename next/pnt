@@ -1,18 +1,18 @@
 {
-  "$id": "https://mstahl-iis.github.io/ogrp/next/pnt",
+  "$id": "https://fraunhofer-iis.github.io/ogrp/next/pnt",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Position, Navigation, Timing (PNT)",
   "description": "Reliable position, navigation, and timing including sensors, algorithms, integrity/continuity/availability, and policies.",
   "type": "object",
   "properties": {
     "fix": {
-      "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/FixType"
+      "$ref": "./pvt.schema.yaml#/$defs/FixType"
     },
     "algorithm": {
-      "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/Algorithm"
+      "$ref": "./pvt.schema.yaml#/$defs/Algorithm"
     },
     "datum": {
-      "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/GeodeticDatum"
+      "$ref": "./pvt.schema.yaml#/$defs/GeodeticDatum"
     },
     "position": {
       "$ref": "#/$defs/Position"
@@ -92,7 +92,7 @@
       "type": "object",
       "properties": {
         "cartesian_ecef": {
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/CartesianPosition"
+          "$ref": "./pvt.schema.yaml#/$defs/CartesianPosition"
         },
         "geodetic_ecef": {
           "$ref": "#/$defs/GeodeticPosition"
@@ -200,7 +200,7 @@
           "$ref": "#/$defs/GroundVerticalVelocity"
         },
         "cartesian_ecef": {
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/CartesianVelocity"
+          "$ref": "./pvt.schema.yaml#/$defs/CartesianVelocity"
         },
         "enu": {
           "$ref": "#/$defs/EastNorthUpVelocity"
@@ -297,31 +297,31 @@
       "properties": {
         "utc": {
           "description": "Universal Coordinated Time (uses leap seconds)",
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/DateTime"
+          "$ref": "./pvt.schema.yaml#/$defs/DateTime"
         },
         "tai": {
           "description": "International Atomic Time (strictly monotonic)",
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/DateTime"
+          "$ref": "./pvt.schema.yaml#/$defs/DateTime"
         },
         "gpst": {
           "description": "GPS Time (strictly monotonic)",
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/GnssTime"
+          "$ref": "./pvt.schema.yaml#/$defs/GnssTime"
         },
         "gst": {
           "description": "Galileo System Time (strictly monotonic)",
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/GnssTime"
+          "$ref": "./pvt.schema.yaml#/$defs/GnssTime"
         },
         "bdt": {
           "description": "BeiDou Time (strictly monotonic)",
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/GnssTime"
+          "$ref": "./pvt.schema.yaml#/$defs/GnssTime"
         },
         "glonasst": {
           "description": "GLONASS Time (UTC-like)",
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/DateTime"
+          "$ref": "./pvt.schema.yaml#/$defs/DateTime"
         }
       },
       "additionalProperties": {
-        "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/GnssTime"
+        "$ref": "./pvt.schema.yaml#/$defs/GnssTime"
       },
       "minProperties": 1
     },
@@ -412,10 +412,10 @@
       "type": "object",
       "properties": {
         "global_position": {
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/PositionCovariance"
+          "$ref": "./pvt.schema.yaml#/$defs/PositionCovariance"
         },
         "global_velocity": {
-          "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt#/$defs/VelocityCovariance"
+          "$ref": "./pvt.schema.yaml#/$defs/VelocityCovariance"
         },
         "local_position": {
           "$ref": "#/$defs/PositionCovarianceNED"

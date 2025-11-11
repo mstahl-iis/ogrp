@@ -1,5 +1,5 @@
 {
-  "$id": "https://mstahl-iis.github.io/ogrp/next/pvt",
+  "$id": "https://fraunhofer-iis.github.io/ogrp/next/pvt",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Position, Velocity, Time (PVT)",
   "description": "Position and velocity refer to earth-centered, earth-fixed cartesian coordinate system defined by `datum`.",

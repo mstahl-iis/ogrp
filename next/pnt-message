@@ -1,5 +1,5 @@
 {
-  "$id": "https://mstahl-iis.github.io/ogrp/next/pnt-message",
+  "$id": "https://fraunhofer-iis.github.io/ogrp/next/pnt-message",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "OGRP PNT message",
   "description": "Reliable position, navigation, and timing including sensors, algorithms, integrity/continuity/availability, and policies.",
@@ -14,10 +14,10 @@
   ],
   "properties": {
     "$schema": {
-      "const": "https://mstahl-iis.github.io/ogrp/next/pnt-message"
+      "const": "https://fraunhofer-iis.github.io/ogrp/next/pnt-message"
     },
     "pnt": {
-      "$ref": "https://mstahl-iis.github.io/ogrp/next/pnt"
+      "$ref": "./pnt"
     }
   },
   "$defs": {

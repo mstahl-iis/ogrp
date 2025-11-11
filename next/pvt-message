@@ -1,5 +1,5 @@
 {
-  "$id": "https://mstahl-iis.github.io/ogrp/next/pvt-message",
+  "$id": "https://fraunhofer-iis.github.io/ogrp/next/pvt-message",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "OGRP PVT message",
   "description": "The PVT message contains a minimal set of properties computed by each PVT algorithm.",
@@ -14,10 +14,10 @@
   ],
   "properties": {
     "$schema": {
-      "const": "https://mstahl-iis.github.io/ogrp/next/pvt-message"
+      "const": "https://fraunhofer-iis.github.io/ogrp/next/pvt-message"
     },
     "pvt": {
-      "$ref": "https://mstahl-iis.github.io/ogrp/next/pvt"
+      "$ref": "./pvt"
     }
   },
   "$defs": {
