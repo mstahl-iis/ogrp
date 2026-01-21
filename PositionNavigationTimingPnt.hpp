@@ -18,7 +18,7 @@
 #include "DilutionOfPrecision.hpp"
 #include "Orientation.hpp"
 #include "Position.hpp"
-#include "GnssSignals.hpp"
+#include "GnssSatellites.hpp"
 #include "TimeValue.hpp"
 #include "GnssTime.hpp"
 #include "Velocity.hpp"
@@ -43,7 +43,7 @@ namespace ogrp {
         std::string fix;
         std::optional<Orientation> orientation;
         Position position;
-        std::optional<GnssSignals> signals;
+        std::optional<GnssSatellites> satellites;
         std::map<std::string, TimeValue> time;
         Velocity velocity;
     };

@@ -25,7 +25,8 @@
 #include "CartesianVelocity.hpp"
 #include "TimeValue.hpp"
 #include "GnssTime.hpp"
-#include "GnssSignals.hpp"
+#include "GnssSatellites.hpp"
+#include "GnssSatelliteSignals.hpp"
 #include "Position.hpp"
 #include "GeodeticPosition.hpp"
 #include "CartesianPosition.hpp"
@@ -80,8 +81,11 @@ void to_json(json & j, const GeodeticPosition & x);
 void from_json(const json & j, Position & x);
 void to_json(json & j, const Position & x);
 
-void from_json(const json & j, GnssSignals & x);
-void to_json(json & j, const GnssSignals & x);
+void from_json(const json & j, GnssSatelliteSignals & x);
+void to_json(json & j, const GnssSatelliteSignals & x);
+
+void from_json(const json & j, GnssSatellites & x);
+void to_json(json & j, const GnssSatellites & x);
 
 void from_json(const json & j, GnssTime & x);
 void to_json(json & j, const GnssTime & x);
@@ -359,17 +363,40 @@ namespace ogrp {
         }
     }
 
-    inline void from_json(const json & j, GnssSignals& x) {
-        x.beidou = get_stack_optional<std::map<std::string, int64_t>>(j, "beidou");
-        x.galileo = get_stack_optional<std::map<std::string, int64_t>>(j, "galileo");
-        x.glonass = get_stack_optional<std::map<std::string, int64_t>>(j, "glonass");
-        x.gps = get_stack_optional<std::map<std::string, int64_t>>(j, "gps");
-        x.navic = get_stack_optional<std::map<std::string, int64_t>>(j, "navic");
-        x.qzss = get_stack_optional<std::map<std::string, int64_t>>(j, "qzss");
-        x.sbas = get_stack_optional<std::map<std::string, int64_t>>(j, "sbas");
+    inline void from_json(const json & j, GnssSatelliteSignals& x) {
+        x.azimuth = get_stack_optional<double>(j, "azimuth");
+        x.elevation = get_stack_optional<double>(j, "elevation");
+        x.signals_used = get_stack_optional<std::vector<std::string>>(j, "signals_used");
+        x.snr = get_stack_optional<double>(j, "snr");
     }
 
-    inline void to_json(json & j, const GnssSignals & x) {
+    inline void to_json(json & j, const GnssSatelliteSignals & x) {
+        j = json::object();
+        if (x.azimuth) {
+            j["azimuth"] = x.azimuth;
+        }
+        if (x.elevation) {
+            j["elevation"] = x.elevation;
+        }
+        if (x.signals_used) {
+            j["signals_used"] = x.signals_used;
+        }
+        if (x.snr) {
+            j["snr"] = x.snr;
+        }
+    }
+
+    inline void from_json(const json & j, GnssSatellites& x) {
+        x.beidou = get_stack_optional<GnssSatelliteSignals>(j, "beidou");
+        x.galileo = get_stack_optional<GnssSatelliteSignals>(j, "galileo");
+        x.glonass = get_stack_optional<GnssSatelliteSignals>(j, "glonass");
+        x.gps = get_stack_optional<GnssSatelliteSignals>(j, "gps");
+        x.navic = get_stack_optional<GnssSatelliteSignals>(j, "navic");
+        x.qzss = get_stack_optional<GnssSatelliteSignals>(j, "qzss");
+        x.sbas = get_stack_optional<GnssSatelliteSignals>(j, "sbas");
+    }
+
+    inline void to_json(json & j, const GnssSatellites & x) {
         j = json::object();
         if (x.beidou) {
             j["beidou"] = x.beidou;
@@ -510,7 +537,7 @@ namespace ogrp {
         x.fix = j.at("fix").get<std::string>();
         x.orientation = get_stack_optional<Orientation>(j, "orientation");
         x.position = j.at("position").get<Position>();
-        x.signals = get_stack_optional<GnssSignals>(j, "signals");
+        x.satellites = get_stack_optional<GnssSatellites>(j, "satellites");
         x.time = j.at("time").get<std::map<std::string, TimeValue>>();
         x.velocity = j.at("velocity").get<Velocity>();
     }
@@ -532,8 +559,8 @@ namespace ogrp {
             j["orientation"] = x.orientation;
         }
         j["position"] = x.position;
-        if (x.signals) {
-            j["signals"] = x.signals;
+        if (x.satellites) {
+            j["satellites"] = x.satellites;
         }
         j["time"] = x.time;
         j["velocity"] = x.velocity;
