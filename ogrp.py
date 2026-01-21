@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Optional, Dict, Union, TypeVar, Type, cast, Callable
+from typing import Any, Optional, List, Dict, Union, TypeVar, Type, cast, Callable
 from datetime import datetime
 from uuid import UUID
 import dateutil.parser
@@ -42,14 +42,19 @@ def from_str(x: Any) -> str:
     return x
 
 
-def from_dict(f: Callable[[Any], T], x: Any) -> Dict[str, T]:
-    assert isinstance(x, dict)
-    return { k: f(v) for (k, v) in x.items() }
+def from_list(f: Callable[[Any], T], x: Any) -> List[T]:
+    assert isinstance(x, list)
+    return [f(y) for y in x]
 
 
 def from_int(x: Any) -> int:
     assert isinstance(x, int) and not isinstance(x, bool)
     return x
+
+
+def from_dict(f: Callable[[Any], T], x: Any) -> Dict[str, T]:
+    assert isinstance(x, dict)
+    return { k: f(v) for (k, v) in x.items() }
 
 
 def from_datetime(x: Any) -> datetime:
@@ -556,59 +561,81 @@ class Position:
 
 
 @dataclass
-class GNSSSignals:
-    """GNSS signals used for position, velocity, and time computation."""
+class GNSSSatelliteSignals:
+    azimuth: Optional[float] = None
+    """Azimuth angle in degrees."""
 
-    beidou: Optional[Dict[str, int]] = None
-    """Number of signals used per frequency band. E.g. { "b1c": 3, "b2a": 2, "b3": 5 }."""
+    elevation: Optional[float] = None
+    """Elevation angle in degrees."""
 
-    galileo: Optional[Dict[str, int]] = None
-    """Number of signals used per frequency band. E.g. { "e1b": 3, "e5a": 2, "e6a": 5 }."""
+    signals_used: Optional[List[str]] = None
+    """List of GNSS signals"""
 
-    glonass: Optional[Dict[str, int]] = None
-    """Number of signals used per frequency band. E.g. { "l1": 3, "l2": 2 }."""
-
-    gps: Optional[Dict[str, int]] = None
-    """Number of signals used per frequency band. E.g. { "l1ca": 3, "l2c": 2 }."""
-
-    navic: Optional[Dict[str, int]] = None
-    """Number of signals used per frequency band. E.g. { "l5": 3, "s": 2 }."""
-
-    qzss: Optional[Dict[str, int]] = None
-    """Number of signals used per frequency band. E.g. { "l1ca": 3, "l2cm": 2, "l5i": 5,
-    "l6lex": 1 }.
-    """
-    sbas: Optional[Dict[str, int]] = None
-    """Number of signals used per frequency band. E.g. { "l1egnos": 3, "l5waas": 2 }."""
+    snr: Optional[float] = None
+    """SNR in dB-Hz."""
 
     @staticmethod
-    def from_dict(obj: Any) -> 'GNSSSignals':
+    def from_dict(obj: Any) -> 'GNSSSatelliteSignals':
         assert isinstance(obj, dict)
-        beidou = from_union([lambda x: from_dict(from_int, x), from_none], obj.get("beidou"))
-        galileo = from_union([lambda x: from_dict(from_int, x), from_none], obj.get("galileo"))
-        glonass = from_union([lambda x: from_dict(from_int, x), from_none], obj.get("glonass"))
-        gps = from_union([lambda x: from_dict(from_int, x), from_none], obj.get("gps"))
-        navic = from_union([lambda x: from_dict(from_int, x), from_none], obj.get("navic"))
-        qzss = from_union([lambda x: from_dict(from_int, x), from_none], obj.get("qzss"))
-        sbas = from_union([lambda x: from_dict(from_int, x), from_none], obj.get("sbas"))
-        return GNSSSignals(beidou, galileo, glonass, gps, navic, qzss, sbas)
+        azimuth = from_union([from_float, from_none], obj.get("azimuth"))
+        elevation = from_union([from_float, from_none], obj.get("elevation"))
+        signals_used = from_union([lambda x: from_list(from_str, x), from_none], obj.get("signals_used"))
+        snr = from_union([from_float, from_none], obj.get("snr"))
+        return GNSSSatelliteSignals(azimuth, elevation, signals_used, snr)
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        if self.azimuth is not None:
+            result["azimuth"] = from_union([to_float, from_none], self.azimuth)
+        if self.elevation is not None:
+            result["elevation"] = from_union([to_float, from_none], self.elevation)
+        if self.signals_used is not None:
+            result["signals_used"] = from_union([lambda x: from_list(from_str, x), from_none], self.signals_used)
+        if self.snr is not None:
+            result["snr"] = from_union([to_float, from_none], self.snr)
+        return result
+
+
+@dataclass
+class GNSSSatellites:
+    """GNSS signals used for position, velocity, and time computation."""
+
+    beidou: Optional[GNSSSatelliteSignals] = None
+    galileo: Optional[GNSSSatelliteSignals] = None
+    glonass: Optional[GNSSSatelliteSignals] = None
+    gps: Optional[GNSSSatelliteSignals] = None
+    navic: Optional[GNSSSatelliteSignals] = None
+    qzss: Optional[GNSSSatelliteSignals] = None
+    sbas: Optional[GNSSSatelliteSignals] = None
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GNSSSatellites':
+        assert isinstance(obj, dict)
+        beidou = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("beidou"))
+        galileo = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("galileo"))
+        glonass = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("glonass"))
+        gps = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("gps"))
+        navic = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("navic"))
+        qzss = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("qzss"))
+        sbas = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("sbas"))
+        return GNSSSatellites(beidou, galileo, glonass, gps, navic, qzss, sbas)
 
     def to_dict(self) -> dict:
         result: dict = {}
         if self.beidou is not None:
-            result["beidou"] = from_union([lambda x: from_dict(from_int, x), from_none], self.beidou)
+            result["beidou"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.beidou)
         if self.galileo is not None:
-            result["galileo"] = from_union([lambda x: from_dict(from_int, x), from_none], self.galileo)
+            result["galileo"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.galileo)
         if self.glonass is not None:
-            result["glonass"] = from_union([lambda x: from_dict(from_int, x), from_none], self.glonass)
+            result["glonass"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.glonass)
         if self.gps is not None:
-            result["gps"] = from_union([lambda x: from_dict(from_int, x), from_none], self.gps)
+            result["gps"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.gps)
         if self.navic is not None:
-            result["navic"] = from_union([lambda x: from_dict(from_int, x), from_none], self.navic)
+            result["navic"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.navic)
         if self.qzss is not None:
-            result["qzss"] = from_union([lambda x: from_dict(from_int, x), from_none], self.qzss)
+            result["qzss"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.qzss)
         if self.sbas is not None:
-            result["sbas"] = from_union([lambda x: from_dict(from_int, x), from_none], self.sbas)
+            result["sbas"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.sbas)
         return result
 
 
@@ -833,7 +860,7 @@ class PositionNavigationTimingPNT:
     covariance: Optional[Covariance] = None
     dop: Optional[DilutionOfPrecision] = None
     orientation: Optional[Orientation] = None
-    signals: Optional[GNSSSignals] = None
+    satellites: Optional[GNSSSatellites] = None
 
     @staticmethod
     def from_dict(obj: Any) -> 'PositionNavigationTimingPNT':
@@ -847,8 +874,8 @@ class PositionNavigationTimingPNT:
         covariance = from_union([Covariance.from_dict, from_none], obj.get("covariance"))
         dop = from_union([DilutionOfPrecision.from_dict, from_none], obj.get("dop"))
         orientation = from_union([Orientation.from_dict, from_none], obj.get("orientation"))
-        signals = from_union([GNSSSignals.from_dict, from_none], obj.get("signals"))
-        return PositionNavigationTimingPNT(datum, fix, position, time, velocity, algorithm, covariance, dop, orientation, signals)
+        satellites = from_union([GNSSSatellites.from_dict, from_none], obj.get("satellites"))
+        return PositionNavigationTimingPNT(datum, fix, position, time, velocity, algorithm, covariance, dop, orientation, satellites)
 
     def to_dict(self) -> dict:
         result: dict = {}
@@ -865,8 +892,8 @@ class PositionNavigationTimingPNT:
             result["dop"] = from_union([lambda x: to_class(DilutionOfPrecision, x), from_none], self.dop)
         if self.orientation is not None:
             result["orientation"] = from_union([lambda x: to_class(Orientation, x), from_none], self.orientation)
-        if self.signals is not None:
-            result["signals"] = from_union([lambda x: to_class(GNSSSignals, x), from_none], self.signals)
+        if self.satellites is not None:
+            result["satellites"] = from_union([lambda x: to_class(GNSSSatellites, x), from_none], self.satellites)
         return result
 
 
