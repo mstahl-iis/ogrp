@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, Optional, List, Dict, Union, TypeVar, Type, cast, Callable
+from typing import Any, Optional, Dict, Union, TypeVar, Type, cast, Callable
 from datetime import datetime
 from uuid import UUID
 import dateutil.parser
@@ -40,11 +40,6 @@ def to_class(c: Type[T], x: Any) -> dict:
 def from_str(x: Any) -> str:
     assert isinstance(x, str)
     return x
-
-
-def from_list(f: Callable[[Any], T], x: Any) -> List[T]:
-    assert isinstance(x, list)
-    return [f(y) for y in x]
 
 
 def from_int(x: Any) -> int:
@@ -561,38 +556,100 @@ class Position:
 
 
 @dataclass
-class GNSSSatelliteSignals:
-    azimuth: Optional[float] = None
-    """Azimuth angle in degrees."""
-
-    elevation: Optional[float] = None
-    """Elevation angle in degrees."""
-
-    signals_used: Optional[List[str]] = None
-    """List of GNSS signals"""
-
-    snr: Optional[float] = None
-    """SNR in dB-Hz."""
+class BeiDouSignals:
+    pass
 
     @staticmethod
-    def from_dict(obj: Any) -> 'GNSSSatelliteSignals':
+    def from_dict(obj: Any) -> 'BeiDouSignals':
         assert isinstance(obj, dict)
-        azimuth = from_union([from_float, from_none], obj.get("azimuth"))
-        elevation = from_union([from_float, from_none], obj.get("elevation"))
-        signals_used = from_union([lambda x: from_list(from_str, x), from_none], obj.get("signals_used"))
-        snr = from_union([from_float, from_none], obj.get("snr"))
-        return GNSSSatelliteSignals(azimuth, elevation, signals_used, snr)
+        return BeiDouSignals()
 
     def to_dict(self) -> dict:
         result: dict = {}
-        if self.azimuth is not None:
-            result["azimuth"] = from_union([to_float, from_none], self.azimuth)
-        if self.elevation is not None:
-            result["elevation"] = from_union([to_float, from_none], self.elevation)
-        if self.signals_used is not None:
-            result["signals_used"] = from_union([lambda x: from_list(from_str, x), from_none], self.signals_used)
-        if self.snr is not None:
-            result["snr"] = from_union([to_float, from_none], self.snr)
+        return result
+
+
+@dataclass
+class GalileoSignals:
+    pass
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GalileoSignals':
+        assert isinstance(obj, dict)
+        return GalileoSignals()
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        return result
+
+
+@dataclass
+class GLONASSSignals:
+    pass
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GLONASSSignals':
+        assert isinstance(obj, dict)
+        return GLONASSSignals()
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        return result
+
+
+@dataclass
+class GPSSignals:
+    pass
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'GPSSignals':
+        assert isinstance(obj, dict)
+        return GPSSignals()
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        return result
+
+
+@dataclass
+class NavICIRNSSSignals:
+    pass
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'NavICIRNSSSignals':
+        assert isinstance(obj, dict)
+        return NavICIRNSSSignals()
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        return result
+
+
+@dataclass
+class QZSSSignals:
+    pass
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'QZSSSignals':
+        assert isinstance(obj, dict)
+        return QZSSSignals()
+
+    def to_dict(self) -> dict:
+        result: dict = {}
+        return result
+
+
+@dataclass
+class SBASSignals:
+    pass
+
+    @staticmethod
+    def from_dict(obj: Any) -> 'SBASSignals':
+        assert isinstance(obj, dict)
+        return SBASSignals()
+
+    def to_dict(self) -> dict:
+        result: dict = {}
         return result
 
 
@@ -600,42 +657,42 @@ class GNSSSatelliteSignals:
 class GNSSSatellites:
     """GNSS signals used for position, velocity, and time computation."""
 
-    beidou: Optional[GNSSSatelliteSignals] = None
-    galileo: Optional[GNSSSatelliteSignals] = None
-    glonass: Optional[GNSSSatelliteSignals] = None
-    gps: Optional[GNSSSatelliteSignals] = None
-    navic: Optional[GNSSSatelliteSignals] = None
-    qzss: Optional[GNSSSatelliteSignals] = None
-    sbas: Optional[GNSSSatelliteSignals] = None
+    beidou: Optional[BeiDouSignals] = None
+    galileo: Optional[GalileoSignals] = None
+    glonass: Optional[GLONASSSignals] = None
+    gps: Optional[GPSSignals] = None
+    navic: Optional[NavICIRNSSSignals] = None
+    qzss: Optional[QZSSSignals] = None
+    sbas: Optional[SBASSignals] = None
 
     @staticmethod
     def from_dict(obj: Any) -> 'GNSSSatellites':
         assert isinstance(obj, dict)
-        beidou = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("beidou"))
-        galileo = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("galileo"))
-        glonass = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("glonass"))
-        gps = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("gps"))
-        navic = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("navic"))
-        qzss = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("qzss"))
-        sbas = from_union([GNSSSatelliteSignals.from_dict, from_none], obj.get("sbas"))
+        beidou = from_union([BeiDouSignals.from_dict, from_none], obj.get("beidou"))
+        galileo = from_union([GalileoSignals.from_dict, from_none], obj.get("galileo"))
+        glonass = from_union([GLONASSSignals.from_dict, from_none], obj.get("glonass"))
+        gps = from_union([GPSSignals.from_dict, from_none], obj.get("gps"))
+        navic = from_union([NavICIRNSSSignals.from_dict, from_none], obj.get("navic"))
+        qzss = from_union([QZSSSignals.from_dict, from_none], obj.get("qzss"))
+        sbas = from_union([SBASSignals.from_dict, from_none], obj.get("sbas"))
         return GNSSSatellites(beidou, galileo, glonass, gps, navic, qzss, sbas)
 
     def to_dict(self) -> dict:
         result: dict = {}
         if self.beidou is not None:
-            result["beidou"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.beidou)
+            result["beidou"] = from_union([lambda x: to_class(BeiDouSignals, x), from_none], self.beidou)
         if self.galileo is not None:
-            result["galileo"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.galileo)
+            result["galileo"] = from_union([lambda x: to_class(GalileoSignals, x), from_none], self.galileo)
         if self.glonass is not None:
-            result["glonass"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.glonass)
+            result["glonass"] = from_union([lambda x: to_class(GLONASSSignals, x), from_none], self.glonass)
         if self.gps is not None:
-            result["gps"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.gps)
+            result["gps"] = from_union([lambda x: to_class(GPSSignals, x), from_none], self.gps)
         if self.navic is not None:
-            result["navic"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.navic)
+            result["navic"] = from_union([lambda x: to_class(NavICIRNSSSignals, x), from_none], self.navic)
         if self.qzss is not None:
-            result["qzss"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.qzss)
+            result["qzss"] = from_union([lambda x: to_class(QZSSSignals, x), from_none], self.qzss)
         if self.sbas is not None:
-            result["sbas"] = from_union([lambda x: to_class(GNSSSatelliteSignals, x), from_none], self.sbas)
+            result["sbas"] = from_union([lambda x: to_class(SBASSignals, x), from_none], self.sbas)
         return result
 
 
