@@ -26,7 +26,13 @@
 #include "TimeValue.hpp"
 #include "GnssTime.hpp"
 #include "GnssSatellites.hpp"
-#include "GnssSatelliteSignals.hpp"
+#include "SbasSignals.hpp"
+#include "QzssSignals.hpp"
+#include "NavIcIrnssSignals.hpp"
+#include "GpsSignals.hpp"
+#include "GlonassSignals.hpp"
+#include "GalileoSignals.hpp"
+#include "BeiDouSignals.hpp"
 #include "Position.hpp"
 #include "GeodeticPosition.hpp"
 #include "CartesianPosition.hpp"
@@ -81,8 +87,26 @@ void to_json(json & j, const GeodeticPosition & x);
 void from_json(const json & j, Position & x);
 void to_json(json & j, const Position & x);
 
-void from_json(const json & j, GnssSatelliteSignals & x);
-void to_json(json & j, const GnssSatelliteSignals & x);
+void from_json(const json & j, BeiDouSignals & x);
+void to_json(json & j, const BeiDouSignals & x);
+
+void from_json(const json & j, GalileoSignals & x);
+void to_json(json & j, const GalileoSignals & x);
+
+void from_json(const json & j, GlonassSignals & x);
+void to_json(json & j, const GlonassSignals & x);
+
+void from_json(const json & j, GpsSignals & x);
+void to_json(json & j, const GpsSignals & x);
+
+void from_json(const json & j, NavIcIrnssSignals & x);
+void to_json(json & j, const NavIcIrnssSignals & x);
+
+void from_json(const json & j, QzssSignals & x);
+void to_json(json & j, const QzssSignals & x);
+
+void from_json(const json & j, SbasSignals & x);
+void to_json(json & j, const SbasSignals & x);
 
 void from_json(const json & j, GnssSatellites & x);
 void to_json(json & j, const GnssSatellites & x);
@@ -363,37 +387,63 @@ namespace ogrp {
         }
     }
 
-    inline void from_json(const json & j, GnssSatelliteSignals& x) {
-        x.azimuth = get_stack_optional<double>(j, "azimuth");
-        x.elevation = get_stack_optional<double>(j, "elevation");
-        x.signals_used = get_stack_optional<std::vector<std::string>>(j, "signals_used");
-        x.snr = get_stack_optional<double>(j, "snr");
+    inline void from_json(const json & j, BeiDouSignals& x) {
     }
 
-    inline void to_json(json & j, const GnssSatelliteSignals & x) {
+    inline void to_json(json & j, const BeiDouSignals & x) {
         j = json::object();
-        if (x.azimuth) {
-            j["azimuth"] = x.azimuth;
-        }
-        if (x.elevation) {
-            j["elevation"] = x.elevation;
-        }
-        if (x.signals_used) {
-            j["signals_used"] = x.signals_used;
-        }
-        if (x.snr) {
-            j["snr"] = x.snr;
-        }
+    }
+
+    inline void from_json(const json & j, GalileoSignals& x) {
+    }
+
+    inline void to_json(json & j, const GalileoSignals & x) {
+        j = json::object();
+    }
+
+    inline void from_json(const json & j, GlonassSignals& x) {
+    }
+
+    inline void to_json(json & j, const GlonassSignals & x) {
+        j = json::object();
+    }
+
+    inline void from_json(const json & j, GpsSignals& x) {
+    }
+
+    inline void to_json(json & j, const GpsSignals & x) {
+        j = json::object();
+    }
+
+    inline void from_json(const json & j, NavIcIrnssSignals& x) {
+    }
+
+    inline void to_json(json & j, const NavIcIrnssSignals & x) {
+        j = json::object();
+    }
+
+    inline void from_json(const json & j, QzssSignals& x) {
+    }
+
+    inline void to_json(json & j, const QzssSignals & x) {
+        j = json::object();
+    }
+
+    inline void from_json(const json & j, SbasSignals& x) {
+    }
+
+    inline void to_json(json & j, const SbasSignals & x) {
+        j = json::object();
     }
 
     inline void from_json(const json & j, GnssSatellites& x) {
-        x.beidou = get_stack_optional<GnssSatelliteSignals>(j, "beidou");
-        x.galileo = get_stack_optional<GnssSatelliteSignals>(j, "galileo");
-        x.glonass = get_stack_optional<GnssSatelliteSignals>(j, "glonass");
-        x.gps = get_stack_optional<GnssSatelliteSignals>(j, "gps");
-        x.navic = get_stack_optional<GnssSatelliteSignals>(j, "navic");
-        x.qzss = get_stack_optional<GnssSatelliteSignals>(j, "qzss");
-        x.sbas = get_stack_optional<GnssSatelliteSignals>(j, "sbas");
+        x.beidou = get_stack_optional<BeiDouSignals>(j, "beidou");
+        x.galileo = get_stack_optional<GalileoSignals>(j, "galileo");
+        x.glonass = get_stack_optional<GlonassSignals>(j, "glonass");
+        x.gps = get_stack_optional<GpsSignals>(j, "gps");
+        x.navic = get_stack_optional<NavIcIrnssSignals>(j, "navic");
+        x.qzss = get_stack_optional<QzssSignals>(j, "qzss");
+        x.sbas = get_stack_optional<SbasSignals>(j, "sbas");
     }
 
     inline void to_json(json & j, const GnssSatellites & x) {
