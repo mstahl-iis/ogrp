@@ -502,31 +502,80 @@
       "properties": {
         "gps": {
           "title": "GPS signals",
-          "$ref": "#/$defs/Satellite"
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^[0-9]+$": {
+              "$ref": "#/$defs/Satellite"
+            }
+          },
+          "additionalProperties": false
         },
         "glonass": {
           "title": "GLONASS signals",
-          "$ref": "#/$defs/Satellite"
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^[0-9]+$": {
+              "$ref": "#/$defs/Satellite"
+            }
+          },
+          "additionalProperties": false
         },
         "galileo": {
           "title": "Galileo signals",
-          "$ref": "#/$defs/Satellite"
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^[0-9]+$": {
+              "$ref": "#/$defs/Satellite"
+            }
+          },
+          "additionalProperties": false
         },
         "beidou": {
           "title": "BeiDou signals",
-          "$ref": "#/$defs/Satellite"
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^[0-9]+$": {
+              "$ref": "#/$defs/Satellite"
+            }
+          },
+          "additionalProperties": false
         },
         "qzss": {
           "title": "QZSS signals",
-          "$ref": "#/$defs/Satellite"
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^[0-9]+$": {
+              "$ref": "#/$defs/Satellite"
+            }
+          },
+          "additionalProperties": false
         },
         "navic": {
           "title": "NavIC/IRNSS signals",
-          "$ref": "#/$defs/Satellite"
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^[0-9]+$": {
+              "$ref": "#/$defs/Satellite"
+            }
+          },
+          "additionalProperties": false
         },
         "sbas": {
           "title": "SBAS signals",
-          "$ref": "#/$defs/Satellite"
+          "type": "object",
+          "minProperties": 1,
+          "patternProperties": {
+            "^[0-9]+$": {
+              "$ref": "#/$defs/Satellite"
+            }
+          },
+          "additionalProperties": false
         }
       },
       "minProperties": 1
